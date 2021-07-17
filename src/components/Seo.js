@@ -9,6 +9,7 @@ const SEO = ({title, description, meta = []}) => {
           siteMetadata {
             description
             title
+            twitter
           }
         }
       }
