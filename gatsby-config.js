@@ -25,5 +25,7 @@ module.exports = {
         name: `posts`,
       }
     },
+    `gatsby-plugin-image`,
+    `gatsby-plugin-sharp`
   ],
 };
