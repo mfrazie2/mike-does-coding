@@ -1,0 +1,168 @@
+---
+title: Joining Arrays By Uniqueness Part 1
+date: 2018-08-18
+---
+I ran into a problem at work where I needed to keep the values from one array, populate another array with values, and then join the two. My first approach was to concatenate the arrays together. I didn't take into account that the second array may conatain duplicate items from the first. Now I have a table displaying multiples of the same value and it only gets worse the more times I repeat this operation. Clearly, concatenation was not the solution. I took a step back from the problem and broke it down into the parts that really mattered: one array of the initial values, a second array of updated values (with possible duplicates), and a resulting array of only the unique values between the two. With that perspective, I approached the problem starting with a simple use case before moving on to the complex case. 
+
+In this post, we'll cover how we can take two or more arrays of values and join them together, keeping only the unique values. We'll start with understanding the problem with pseudo-code. Then we write three different ways of joining the arrays together. By the end of this post, you'll be familiar with how to use an array, an object, and a set to collect the unique values, and how refactor a `for`-loop to a `reduce` call. Let's get started!
+
+## Planning an Approach
+When confronted with a problem that is novel and I'm unsure of where to begin, I find it is best to do a proof-of-concept (POC) with a simple case. I don't worry about using native methods or adhering to a declarative coding style. I write out what I expect to happen, where each line has a purpose. Let's look at this example. 
+
+```js
+// Combine the arrays (lyrics and moreLyrics) to a single array
+// Keep only the unique values between the arrays
+// If there are values shared between them, only include those values once
+
+const lyrics = [
+  'oh', 'green', 'world'
+];
+
+const moreLyrics = [
+  'oh', 'green', 'world', 'don\'t', 'desert', 'me', 'now'
+];
+```
+
+As a first approach, I would write out pseudo-code as if I were explaining to anyone else my thought process. It might look something like this. 
+
+```javascript
+// Create an empty array for unique values
+// Iterate over the first array
+  // Add items in first array to unique array
+// Iterate over the second array
+  // Check if item in second array is present in unique array
+    // If yes --> ignore
+    // If no --> add to unique array
+// Return unique array
+```
+
+The power of writing out pseudo-code is the process focuses your thinking down to what needs to be accomplished. By writing out steps in plain language (coding language agnostic), anyone would be able to understand what goal you're trying to complete. In the example above, the steps are generic enough that this could be written in programming language. There is a caveat: I did leave out some constraints on the code such as what the value types are within the arrays. Limitations such as this are helpful to know upfront but ultimately the pseudo-code should allow for stricter requirements to be added later. 
+
+
+## Looping the Arrays
+Now that we have a general sense of what the function should do, let's convert the pseudo-code into actual JavaScript code. We should see a line-for-line conversion. 
+
+```javascript
+function findUniques(array1, array2) {
+  let uniques = [];
+  
+  for (let i = 0; i < array1.length; i++) {
+    uniques.push(array1[i]);
+  }
+  
+  for (let j = 0; j < array2.length; j++) {
+    if (uniques.indexOf(array2[j]) > -1) {
+      continue;
+    } else {
+      uniques.push(array2[j]);
+    }
+  }
+  
+  return uniques;
+}
+```
+
+The function `findUniques` adheres to the plan laid out in the pseudo-code. We're using [`Array.prototype.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf) to determine if the values from `array2` are in the `uniques` array. There are other methods we could use, but `indexOf` works for now. The function works as expected, yet there is room for improvement. Under the hood, `indexOf` is iterating over the `uniques` array to find an index where the values match. Depending on the length of the `uniques` array, this could be a costly operation. Imagine the `uniques` array was hundreds, thousands, millions of values: for each value in `array2`, the program would have to iterate over all the records before returning a matching index or -1. 
+
+## Objecting the Arrays
+
+Let's refactor the `findUniques` function to use a plain-old object instead of an array to collect the unique values. The altered lines will have pseudo-code for clarity. 
+
+```javascript
+function findUniques(array1, array2) {
+  let uniques = {};
+  
+  for (let i = 0; i < array1.length; i++) {
+    let value = array1[i];
+    // create a key/value pair on uniques object with array1 value
+    uniques[value] = value;
+  }
+  
+  for (let j = 0; j < array2.length; j++) {
+    let value2 = array2[j];
+    // check if value in array2 does NOT exist on uniques object
+    if (!uniques.hasOwnProperty(value2)) {
+      // create a key/value pair on uniques object with array2 value
+      uniques[value2] = value2;
+    }
+  }
+  
+  return uniques;
+}
+```
+
+By utilizing an object, we are able to take advantage of a constant time look-up. Either the key we're searching for exists on the `uniques` object or it doesn't. There is no iteration to find the key. Again, consider an object with a million keys: determining if the key exists is much quicker as a property look-up instead of iterating over each property. One thing to keep in mind though, `uniques` is now an object. To convert it back to an array we can call [`Object.keys(uniques)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys) to get an array of all the keys or [`Object.values(uniques)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Object/values) to get an array of all the values. Either method will work because we set the keys and values to the same value (`uniques[value] = value`).
+
+## Reducing the Arrays
+
+We can further refactor the function to now use a more declarative style of programming and take advantage of native methods on the `Array.prototype`. The `for` loop can be swapped out with the [`Array.prototype.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce). The majority of the work we've put in will translate directly to the refactored function. 
+
+```javascript
+function keepOnlyUniques(arr1, arr2) {
+  let uniques = arr1.reduce((uniques, curr) => {
+    if (!uniques.hasOwnProperty(curr)) {
+      uniques[curr] = curr;
+    }
+    return uniques;
+  }, {});
+  
+  return arr2.reduce((uniques, curr) => {
+    if (!uniques.hasOwnProperty(curr)) {
+      uniques[curr] = curr;
+    }
+    return uniques;
+  }, uniques);
+}
+```
+
+Notice that the first `reduce` call uses an empty object as the initial value of the accumulator. This matches the previous functions that start with a empty object where all the values from the first array are added. The second `reduce` call uses the `uniques` object returned from the first `reduce`. Similar to the previous versions, the values of the second array are checked against the values from the first array. 
+
+One thing that is bothersome about this latest version of our solution is that we are essentially repeating the same callback to the `reduce` calls for the arrays. This is not a [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) approach. Let's create a helper function, `collectUniques`, that can replace the shared logic.
+
+```javascript
+function collectUniques(uniques, curr) {
+  if (!uniques.hasOwnProperty(curr)) {
+      uniques[curr] = curr;
+    }
+    return uniques;
+}
+
+function keepOnlyUniques(arr1, arr2) {
+  let uniques = arr1.reduce(collectUniques, {});
+  
+  return arr2.reduce(collectUniques, uniques);
+}
+```
+
+If we wanted to get fancy, we can change the logic of the `keepOnlyUniques` into a single line. I don't prefer either format (two lines versus one line) when writing my own code. The one line format can be more difficult to debug and understand at a glance. We will feed the results of `arr1.reduce` in as the initial value for the `arr2.reduce` call. 
+
+```javascript
+function keepOnlyUniques(arr1, arr2) {
+  return arr2.reduce(collectUniques, arr1.reduce(collectUniques, {}));
+}
+```
+
+
+## Setting the Arrays
+
+There is another option that does not rely on `Array.prototype.reduce` or iterating over the values in the array. As of ES2015, `Set`s are a supported JavaScript object in most major browsers. A [`set`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) is a data structure that is an amorphous collection of values. Similar to an object, a `set` can only have one entry per value, meaning duplicates don't happen. 
+
+To convert an array into a `set`, invoke the `Set` constructor with the keyword `new` and pass in the array of values. In our example, we will concatenate the two arrays before passing them in as the argument to the `Set`. The resulting object will be entries of only the unique values from the arrays. 
+
+```javascript
+let allValues = arr1.concat(arr2);
+
+let uniqueSet = new Set(allValues);
+```
+
+To convert the set back to an array, we can use [`Array.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from) which will create an array from an array-like object.
+
+```javascript
+let uniques = Array.from(new Set(allValues));
+```
+
+
+## Wrap Up
+In this post, we covered three ways to take two (or more) arrays and join them together into a single array with only the unique values. The first approach is loop over the arrays, collecting the unique values in an array and use array native methods to check for duplicates. This can be a slow and costly way depending on the size of the arrays. The next approach also involved looping but took advantage of the array native `reduce` method and objects to decrease the time required to check for duplicates. An object allows for constant time look up of a key, a major improvement over `indexOf` or other looping approaches. The final solution was to use a `Set`, which is similar to an object in that duplicate entries are ignored. This last approached saved use from having to do any looping logic. 
+
+The three approaches are great for cases when the arrays contain primitive values, such as numbers, strings, or booleans. Unfortunately, these solutions would not work for arrays filled with objects. In part two of this post, we will discover how we can leverage the current approaches for the new problem. Until then, if there is something I didn't explain completely or is wrong, or you want to tell me this is great, [drop me a line](mailto:me@mikedoescoding.com).

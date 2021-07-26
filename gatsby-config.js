@@ -17,7 +17,19 @@ module.exports = {
       },
       __key: `images`,
     },
-    `gatsby-plugin-mdx`,
+    {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 590,
+            },
+          },
+        ],
+      },
+    },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -25,7 +37,7 @@ module.exports = {
         name: `posts`,
       }
     },
-    `gatsby-plugin-image`,
-    `gatsby-plugin-sharp`
+    `gatsby-transformer-sharp`,
+    `gatsby-remark-images`
   ],
 };
