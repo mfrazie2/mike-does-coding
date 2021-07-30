@@ -1,9 +1,11 @@
 import React from 'react';
 import Header from './Header';
+import ResetCss from './resetCss';
 
 const Layout = ({children}) => {
     return (
-        <div>
+        <>
+            <ResetCss />
             <Header />
             <main>
                 {children}
@@ -11,7 +13,7 @@ const Layout = ({children}) => {
             <footer>
                 <p>Fun Footer</p>
             </footer>
-        </div>
+        </>
     );
 }
 
