@@ -1,8 +1,8 @@
 import * as React from "react"
-import Layout from "../components/Layout"
-import SEO from "../components/Seo";
+import Layout from "../../components/Layout"
+import SEO from "../../components/Seo";
 import {graphql, Link} from 'gatsby';
-import renderTimeToRead from "../utils/renderTimeToRead";
+import renderTimeToRead from "../../utils/renderTimeToRead";
 
 // markup
 const BlogPage = ({ data }) => {
