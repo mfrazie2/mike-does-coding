@@ -38,6 +38,17 @@ module.exports = {
       }
     },
     `gatsby-transformer-sharp`,
-    `gatsby-remark-images`
+    `gatsby-remark-images`,
+    {
+      resolve: `gatsby-plugin-google-fonts`,
+      options: {
+        fonts: [
+          `big shoulders text`,
+          `roboto`
+        ],
+        display: 'swap'
+      }
+    },
+    `gatsby-plugin-styled-components`
   ],
 };
