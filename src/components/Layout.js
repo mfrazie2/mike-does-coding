@@ -1,14 +1,10 @@
 import React from 'react';
-import {Link} from 'gatsby';
+import Header from './Header';
 
 const Layout = ({children}) => {
     return (
         <div>
-            <header>
-                <nav>
-                    <Link to="/">Home</Link>
-                </nav>
-            </header>
+            <Header />
             <main>
                 {children}
             </main>
