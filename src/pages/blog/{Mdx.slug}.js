@@ -3,6 +3,8 @@ import {graphql} from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import Layout from '../../components/Layout';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
+import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
+deckDeckGoHighlightElement();
 
 const BlogPostPage = ({data}) => {
     const post = data.mdx;

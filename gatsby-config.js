@@ -18,9 +18,22 @@ module.exports = {
       __key: `images`,
     },
     {
+      resolve: `gatsby-transformer-remark`,
+      options: {
+        plugins: [
+          {
+            resolve: `gatsby-remark-highlight-code`,
+          },
+        ],
+      },
+    },
+    {
       resolve: `gatsby-plugin-mdx`,
       options: {
         gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-highlight-code`,
+          },
           {
             resolve: `gatsby-remark-images`,
             options: {
