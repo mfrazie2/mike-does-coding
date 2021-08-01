@@ -1,7 +1,6 @@
-import * as React from "react"
-import Layout from "../../components/Layout"
+import React from "react";
 import SEO from "../../components/Seo";
-import {graphql, Link} from 'gatsby';
+import { graphql, Link } from "gatsby";
 import renderTimeToRead from "../../utils/renderTimeToRead";
 
 // markup
@@ -9,9 +8,9 @@ const BlogPage = ({ data }) => {
   const posts = data.allMdx.nodes;
 
   return (
-    <Layout>
+    <>
       <SEO title={`Blog`} />
-      {posts.map(post => {
+      {posts.map((post) => {
         return (
           <Link to={post.slug} key={post.id}>
             <h2>{post.frontmatter.title}</h2>
@@ -20,13 +19,13 @@ const BlogPage = ({ data }) => {
           </Link>
         );
       })}
-    </Layout>
-  )
-}
+    </>
+  );
+};
 
 export const PageQuery = graphql`
   query PageQuery {
-    allMdx(sort: {fields: [frontmatter___date], order: DESC}) {
+    allMdx(sort: { fields: [frontmatter___date], order: DESC }) {
       nodes {
         slug
         frontmatter {
@@ -40,4 +39,4 @@ export const PageQuery = graphql`
   }
 `;
 
-export default BlogPage
+export default BlogPage;
