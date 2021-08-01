@@ -1,7 +1,7 @@
-import React from "react";
-import SEO from "../../components/Seo";
-import { graphql, Link } from "gatsby";
-import renderTimeToRead from "../../utils/renderTimeToRead";
+import React from 'react';
+import Seo from '../../components/seo';
+import { graphql, Link } from 'gatsby';
+import renderTimeToRead from '../../utils/renderTimeToRead';
 
 // markup
 const BlogPage = ({ data }) => {
@@ -9,8 +9,8 @@ const BlogPage = ({ data }) => {
 
   return (
     <>
-      <SEO title={`Blog`} />
-      {posts.map((post) => {
+      <Seo title={`Blog`} />
+      {posts.map(post => {
         return (
           <Link to={post.slug} key={post.id}>
             <h2>{post.frontmatter.title}</h2>

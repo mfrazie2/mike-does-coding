@@ -1,11 +1,11 @@
-import React from "react";
-import SEO from "../components/Seo";
+import React from 'react';
+import Seo from '../components/seo';
 
 // markup
 const AboutPage = () => {
   return (
     <>
-      <SEO title={`About`} />
+      <Seo title={`About`} />
       <div>Legiterally nothing to see here</div>
     </>
   );
