@@ -6,8 +6,10 @@ import styled from 'styled-components';
 // #region
 const StyledHeader = styled.header`
   background-color: #173670;
-  display: flex;
+  position: sticky;
+  top: 0;
   width: 100%;
+  z-index: 99;
 `;
 
 const HeaderInner = styled.div`
