@@ -1,5 +1,5 @@
 import React from 'react';
-import Seo from '../../components/seo';
+import SeoComponent from '../../components/seoComponent';
 import { graphql, Link } from 'gatsby';
 import renderTimeToRead from '../../utils/renderTimeToRead';
 
@@ -9,7 +9,7 @@ const BlogPage = ({ data }) => {
 
   return (
     <>
-      <Seo title={`Blog`} />
+      <SeoComponent title={`Blog`} />
       {posts.map(post => {
         return (
           <Link to={post.slug} key={post.id}>

@@ -1,11 +1,11 @@
 import React from 'react';
-import Seo from '../components/seo';
+import SeoComponent from '../components/seoComponent';
 
 // markup
 const NotFoundPage = () => {
   return (
     <>
-      <Seo title={`404 Page`} />
+      <SeoComponent title={`404 Page`} />
       <div>Legiterally nothing to see here</div>
     </>
   );

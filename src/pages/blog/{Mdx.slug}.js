@@ -3,7 +3,8 @@ import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import { defineCustomElements as deckDeckGoHighlightElement } from '@deckdeckgo/highlight-code/dist/loader';
-import Seo from '../../components/seo';
+import SeoComponent from '../../components/seoComponent';
+
 deckDeckGoHighlightElement();
 
 const BlogPostPage = ({ data }) => {
@@ -12,7 +13,7 @@ const BlogPostPage = ({ data }) => {
 
   return (
     <>
-      <Seo title={post.frontmatter.title} />
+      <SeoComponent title={post.frontmatter.title} />
       <article>
         {image ? (
           <GatsbyImage image={image} alt={post.frontmatter.imageAlt} />
