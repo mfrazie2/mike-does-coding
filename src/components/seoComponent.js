@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useStaticQuery, graphql } from 'gatsby';
+import favicon from '../images/icon.png';
 
 const SeoComponent = ({ title, description, meta = [] }) => {
   const { site } = useStaticQuery(graphql`
@@ -56,6 +57,7 @@ const SeoComponent = ({ title, description, meta = [] }) => {
           content: `summary`,
         },
       ].concat(meta)}
+      link={[{ rel: 'shortcut icon', type: 'image/png', href: `${favicon}` }]}
     />
   );
 };
