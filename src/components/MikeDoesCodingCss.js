@@ -44,8 +44,6 @@ const MikeDoesCodingCss = createGlobalStyle`
         --deckgo-highlight-code-font-size: 18px;
         --deckgo-highlight-code-token-comment: rgb(150,150,150);
     }
-
-
 `;
 
 export default MikeDoesCodingCss;

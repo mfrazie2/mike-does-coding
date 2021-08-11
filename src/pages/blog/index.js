@@ -1,10 +1,24 @@
 import React from 'react';
-import SeoComponent from '../../components/seoComponent';
 import { graphql, Link } from 'gatsby';
+import styled from 'styled-components';
+import SeoComponent from '../../components/seoComponent';
 import renderTimeToRead from '../../utils/renderTimeToRead';
 import ContentWrapper from '../../components/ContentWrapper';
 
-// markup
+//#region
+const BlogEntry = styled.div`
+  &:not(:last-of-type) {
+    border-bottom: solid 2px;
+  }
+`;
+
+const BlogSubtitle = styled.div`
+  display: flex;
+  gap: 2rem;
+`;
+
+//#endregion
+
 const BlogPage = ({ data }) => {
   const posts = data.allMdx.nodes;
 
@@ -14,13 +28,16 @@ const BlogPage = ({ data }) => {
       <ContentWrapper>
         {posts.map(post => {
           return (
-            <div>
+            <BlogEntry>
               <Link to={`${post.slug}/`} key={post.id}>
                 <h2>{post.frontmatter.title}</h2>
               </Link>
-              <p>{post.frontmatter.date}</p>
-              <p>{renderTimeToRead(post.timeToRead)}</p>
-            </div>
+              <BlogSubtitle>
+                <p>{post.frontmatter.date}</p>
+                <p>|</p>
+                <p>{renderTimeToRead(post.timeToRead)}</p>
+              </BlogSubtitle>
+            </BlogEntry>
           );
         })}
       </ContentWrapper>
