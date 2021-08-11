@@ -1,0 +1,127 @@
+---
+title: Imperative and Declarative Code
+date: 2018-03-24
+---
+
+When I was a high school science teacher, I learned about an activity that showed the importance of writing explicit directions for lab procedures and demonstration steps. The activity tasked students with writing instructions to make a peanut butter and jelly sandwich with a twist. The "person" reading the steps will be an alien, someone with no experience making a sandwich, using a knife and so on. No assumptions could be made about the knowledge of the reader when it comes to the instructions. This activity usually ended with hilarious results such as smashing a loaf of bread with the peanut butter jar or using the knife to cut open the jar.
+
+This activity reminds me of how coding is like writing a lab procedure. When I first started learning how to program, I wrote scripts that were very procedural; the code followed a logical progression where each step was self-documenting. As I learned more, I started writing scripts that were less explicit about what was happening and more implicit about what should happen. These two approaches have their benefits and drawbacks. In this post, I'll explain the two pros and cons of the two approaches with practical examples.
+
+## Imperative vs. Declarative
+
+There is the old adage about how you learn to walk before you can run. This idea can be applied to coding. From my experience, I had to write explicit steps before I could move on to writing more implicit steps. Referring back to the peanut butter sandwich activity, think about how you would go about writing instructions for a young child, a teenager and an adult. Would you have greater specificity in directions for the different ages?
+
+> _Imperative programming_ is writing steps that explain how to complete a task. For example, this means setting explicit control around how to loop over a collection.
+
+> _Declarative programming_ is writing a program that explains more about what to do. For example, this means expressing what should happen for each iteration in a loop, not how to iterate.
+
+## Code Comparison
+
+One of the ways I found to best learn the difference was by looking at how I treat arrays. Let's start with an example of wanting to log the values of an array to the console.
+
+### Logging Example
+
+```javascript
+const myArr = [1, 2, 3, 4, 5, 6];
+const log = value => console.log(value);
+
+// Imperative Code
+for (let i = 0; i < myArr.length; i++) {
+  log(myArr[i]);
+}
+
+// Declarative Code
+myArr.forEach(log);
+```
+
+In the first example, the code is clear in how the values will be logged. The iteration begins at the zeroth index and logs each value until the end of the array. The first example can be interpreted as "starting at index zero, log the value at that index, increment the index, check the index is less than the length of the array, then log the item at that index, repeat".
+
+The second example abstracts away the method by which the iteration will occur. Instead, the second example can be interpreted as "in this array, for each item run the `log` function". This is a bit of a trivial example. Some characters are saved between the two examples, but one is not better from a cognitive overhead perspective over the other. Both are readable and clear in intention. Let's look at something a bit more complex: filtering items out of an array.
+
+### Filtering Example
+
+For the given array, we want only the objects identified as "hero".
+
+```javascript
+const characters = [
+  { name: 'Daredevil', role: 'hero' },
+  { name: 'Kingpin', role: 'villain' },
+  { name: 'Punisher', role: 'anti-hero' },
+  { name: 'Jessica Jones', role: 'hero' },
+  { name: 'Elektra', role: 'villain' },
+];
+const isHero = (character) => character.role === 'hero';
+
+// Imperative Code
+let heroes = [];
+for (let i = 0; i < characters.length; i++) {
+  if (isHero(character)) {
+    heros.push(character[i];
+  }
+}
+console.log(heroes); // [ { name: 'Daredevil', ...}, { name: 'Jessica Jones', ... } ]
+
+// Declarative Code
+let heroes2 = characters.filter(isHero);
+console.log(heroes2); // [ { name: 'Daredevil', ...}, { name: 'Jessica Jones', ... } ]
+```
+
+The major difference between the imperative and declarative approaches here is how the values are collected. The imperative code is explicit in how to collect the values that pass the `isHero` function. The declarative code hides how the iteration and collection process under-the-hood. The two approaches meet the same goal; the filtered values are the same.
+
+The next examples will further show how the declarative approach takes advantage of hiding underlying logic.
+
+### Mapping Example
+
+Here we want to take a number array and double each value within the array.
+
+```javascript
+const numArr = [1, 2, 3, 4, 5, 6];
+const double = value => value * 2;
+
+// Imperative Code
+let doubles = [];
+for (let i = 0; i < numArr.length; i++) {
+  doubles.push(double(numArr[i]));
+}
+console.log(doubles); // [ 2, 4, 6, 8, 10, 12 ]
+
+// Declarative Code
+let doubles2 = numArr.map(double);
+console.log(doubles2); // [ 2, 4, 6, 8, 10, 12 ]
+```
+
+Similar to the `filter` example above, `Array.prototype.map` hides the iteration and value collection process from the outside world.
+
+### Reducing Example
+
+Using the same number array as before, let's sum all the values.
+
+```javascript
+const numArr = [1, 2, 3, 4, 5, 6];
+const addValues = (prevSum, value) => prevSum + value;
+
+// Imperative Code
+let sum = 0;
+for (let i = 0; i < numArr.length; i++) {
+  sum = addValues(sum, numArr[i]);
+}
+console.log(sum); // 21
+
+// Declarative Code
+let sum2 = numArr.reduce(addValues, 0);
+console.log(sum2); // 21
+```
+
+Again, `Array.prototype.reduce` hides the iteration and how the values are accumulated.
+
+## What Should You Use?
+
+Choosing one approach over the other comes down to a personal (or team) choice. There are times it may be necessary to write imperative programs. I sometimes find I need to this when I'm working on a novel problem or trying to grok a new concept. I love using imperative code because it gives me greater control over how the script will run, what the output type will be and provides more opportunities to set breakpoints.
+
+Once you've sufficiently understood a problem and are looking to abstract away the finer details, declarative programs are the way to go. You can begin to assume the reader, you or a colleague, has some understanding of the inner workings of certain methods. You gain the advantage of writing your program in terms of what should happen, rather than how it should happen. I also love using declarative code because it allows me to write a script that describes what is to happen, which I often find is easier to jump back into after some time away.
+
+Both approaches require a certain amount of cognitive load to parse and understand each. For an imperative program, the reader must maintain an idea of the current state of the program while running through the steps. Depending on the complexity of the method, this can be quite mentally taxing, especially while trying to debug. For a declarative program, the reader must have an understanding of the inner workings of the native methods being used. The reader has to be familiar enough with what will be implicitly returned. If the reader is not, then the documentation must be consulted.
+
+## Wrap Up
+
+In this post, we covered the differences between imperative and declarative coding practices. There are pros and cons to using one style over the other. If you want to have full knowledge of how your program is running, then choose imperative practices. If you want to express your program in terms of what should happen, then choose the declarative style. If you are just starting out, don't focus too much on adhering to one style over another. Pick the style that makes the most sense to you in the moment. There is time in the future to refactor from imperative to declarative. As always, if there is something I didn't explain completely or is wrong, [drop me a line](mailto:me@mikedoescoding.com).

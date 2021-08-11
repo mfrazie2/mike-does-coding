@@ -1,0 +1,73 @@
+---
+date: 2016-06-16
+title: Classing in ES5
+---
+
+Creating classes and using inheritance chains are fundamental to object-oriented programming. For a more detailed explanation of OOP in JavaScript, I recommend the following [resource](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript) on the Mozilla Developer Network. In this post, we will explore how to create a class/superclass, a subclass, and use a superclass method within a subclass instance.
+
+For this post, I am going to use the following definitions of superclass and subclass. A superclass is one from which a subclass inherits certain properties and methods. A subclass will delegate failed property lookups to the superclass.
+
+Let’s imagine a very simple racing game that has two types of vehicles: `Car`s and `Van`s. A `Van` is a type of `Car` with a couple different properties. We can say that the `Van` is a subclass of the `Car` superclass. For now, we will create the `Car` constructor function following the pseudoclassical pattern.
+
+The `Car` will take a starting location value as an argument. The `Car` also has a `move` method that increases the value of its location by two.
+
+```javascript
+function Car (loc) {
+  this.loc = loc;
+}
+// Cars can move two spaces at a time
+Car.prototype.move = function () {
+  this.loc += 2;
+  console.log(this.loc);
+};
+// Cars can rev engines
+Car.prototype.rev = function () {
+  console.log(‘vrooom’);
+};
+```
+
+A `Van` is like a `Car` in that it takes a location value as an argument. Therefore, the `Car` constructor is be called within the context of the `Van` constructor passing in the `loc` parameter. The `Van` also has a `boost` property set at `2`. The inheritance chain is then created and the constructor property set to refer to the correct constructor function.
+
+```javascript
+function Van(loc) {
+  Car.call(this, loc);
+  this.boosts = 2;
+}
+// Set up inheritance chain
+Van.prototype = Object.create(Car.prototype);
+// Set constructor property to refer to correct constructor function
+Van.prototype.constructor = Van;
+```
+
+One difference between the `Van` and `Car` is that the `Van` only moves 1 space at a time. That is to say, the `move` method on the `Van` increases its location value by 1 each time.
+
+```javascript
+// Vans can only move one space at time
+Van.prototype.move = function () {
+  this.loc += 1;
+  console.log(this.loc);
+};
+```
+
+Notice here that `Van.prototype.move` places the `move` method on the prototype of any `Van` instance. Therefore, any calls for `newVan.move()` check the `Van.prototype` and stop there. The lookup does not need to go to the `Car.prototype` for the `move` method. Compare this to calling `newVan.rev()`. The `Van.prototype` does not have the `rev` method and must delegate its failed lookups to the `Car.prototype` which possesses the method.
+
+However, the `Van` has an added feature of a `nitro` method. When `nitro` is called, the `Van` is propelled forward at a faster speed and the value of `boost` is decremented by one. The `nitro` method counts as only one move, but the `Van` moves as fast as the `Car` and runs twice. See below.
+
+```javascript
+// Vans also come with a nitro feature that lets it move
+// at the same speed as the car and runs twice
+Van.prototype.nitro = function () {
+  console.log('activating nitro');
+  this.boost -= 1;
+  Car.prototype.move.call(this);
+  Car.prototype.move.call(this);
+  console.log('new location of the van: ', this.loc);
+  console.log(‘boosts remaining: ‘, this.boosts);
+};
+```
+
+While it would be possible to use the `Van.prototype.move` method here, this practice would not be advisable. Currently, four invocations of `Van.prototype.move` result in the same movement as two invocations of `Car.prototype.move`. In the future, we may revise the `move` method of the `Car` to increase the `loc` by 3. In that case, we would have to remember to change the `Van.prototype.nitro` method as well.
+
+Instead, we can invoke the superclass method, `Car.prototype.move`, within the context of the subclass using `call`. The `call` method on the `Function` object allows the context of a function to be changed. In the `nitro` method, the `this` inside `call` is referring to the `Van` constructor. If we decide to change the `move` method of the `Car`, the `nitro` method will automatically include those changes.
+
+Prior to the the 2015 update, JavaScript did not have an explicit means to create classes and subclasses. In order to mimic other programming languages with classing methods, the pseudoclassical instantiation method is used. In the 2015 updated, the `class` keyword was introduced, abstracting away some of the complexity of the ES5 prototype-inheritance pattern. In a future post, classing and subclassing will be explored using ES2015 syntax.

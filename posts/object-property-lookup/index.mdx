@@ -1,0 +1,97 @@
+---
+date: 2018-02-25
+title: Object Property Look-up
+---
+
+When I first started working with JavaScript, I remember getting tripped up when trying to look-up properties in objects. I understood the two notations separately. But when I started trying to use a variable to do the look-up, my mind was slow to understand. In this post, I'll introduce the two notations, dot and bracket, used to do property lookups. Then I'll cover how to do the look-up with variables and, finally, an extension to property lookups with arrays, numbers, and strings.
+
+## Property Look-up Notations
+
+When looking up a property in an object, there are two methods: dot notation and bracket notation. Let's say this is an object we're working in our application.
+
+```javascript
+const user = {
+  name: 'Mike',
+  username: 'mike_f',
+};
+```
+
+Here's how the properties would be accessed.
+
+```javascript
+console.log(user.name); // 'Mike'
+console.log(user['username']); // 'mike_f'
+```
+
+Notice here that with both notations, we list the named object, `user`, first then property we wish to look up. With dot notation, we simply use the key after the dot: `user.name`. With bracket notation, we place a string of the key within the square brackets: `user['username']`.
+
+This is a very important distinction to remember when working with your code. If you will be using bracket notation, the content within the brackets must be a string. With this in mind, let's take a look at how we can do property look-up using a variable.
+
+A quick side note: If you attempt to look-up a property that is not on the object, it will return `undefined`. For example, `user.age` or `user['location']` will both return `undefined` because those properties don't exist on the `user` object.
+
+## Property Look-up with a Variable
+
+Think for a moment which of the following would result in the correct look-up.
+
+```javascript
+const user = {
+  name: 'Mike',
+  username: 'mike_f',
+};
+
+let key = 'name';
+
+console.log(user.key); // What will this log?
+console.log(user[key]); // What will this log?
+```
+
+The first log will be `undefined`. There is no property on the `user` object called `key`. The second log will be `'Mike'`. In the second log, the value of `key` is evaluated as `'name'`. The value of the variable is substituted in during the look-up.
+
+### Use Case
+
+The time you'd most likely use bracket notation with a variable is when you're iterating over the keys of an object and doing something with all of the values. In the following example, we will iterate over the `user` object and log each of the values.
+
+```javascript
+const user = {
+  name: 'Mike',
+  username: 'mike_f',
+};
+
+for (let key in user) {
+  let value = user[key];
+  console.log(`${key}: ${value}`);
+}
+```
+
+Here we are using the `for-in` loop to go over all of the enumerable properties of the `user` object. The first `key` will be `'name'`. We then access the value via `user[key]`, again where `key` is the string `'name'`. This loop will log `name: 'Mike'` and `username: 'mike_f'`.
+
+## Extensions to Property Look-up
+
+There is a saying in JavaScript that everything is an object. This is why it's possible to do the following.
+
+```javascript
+const arr = [1, 2, 3, 4, 5];
+
+arr.length; // 5
+arr['length']; // 5
+
+arr.slice(1, 3); // [ 2, 3 ]
+arr['slice'](2, 4); // [ 3, 4 ]
+
+const str = 'hello world';
+
+str.split(''); // [ 'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd' ]
+str['split'](' '); // [ 'hello', 'world' ]
+
+const num = 415;
+num.toFixed(2); // 415.00
+num['toFixed'](3); // 415.00
+```
+
+Because arrays, numbers and strings are objects, methods and properties on the instances can be looked up via dot notation or bracket notation. While most of the time you'll use dot notation, but there come a time when you need to use bracket notation.
+
+## Wrap Up
+
+Property look-up in JavaScript objects can be done in two ways: using dot notation or bracket notation. With dot notation, you use the named object then a dot followed by the property name. With bracket notation, you use the named object followed by square brackets with a string representing the property name. If you want to look up a property name that is in a variable, you will use bracket notation.
+
+I hope you found this to be a useful introduction to JavaScript objects. As always, if there is something I didn't explain completely or is wrong, [drop me a line](mailto:me@mikedoescoding.com).

@@ -1,0 +1,168 @@
+---
+date: 2016-06-25
+title: Recursion Basics
+---
+
+Recursion is a very powerful method in a developer’s toolbelt. Recursion can take a complex task and transform it into something more tame and straightforward. We will explore the concept of recursion with the task of counting letters in a multi-nested array. Then we will look at the basics of recursion by writing a factorial function.
+
+Let's say we are given the task of counting all occurrences of the letter `"Z"` in an array, such as `[ "A", "Z", "A", "A", "Z" ]`. This is a trivial problem; one that can be solved quickly with single `for` loop and `if` conditional.
+
+```javascript
+function countZ(arr) {
+  var count = 0;
+  for (var i = 0, len = arr.length; i < len; i++) {
+    if (arr[i] === 'Z') {
+      count++;
+    }
+  }
+  return count;
+}
+
+countZ(['A', 'Z', 'A', 'A', 'Z']); // 2
+```
+
+This function will work for arrays of any length, with any data types. We run into a problem if the array contains a nested array with a `"Z"`.
+
+```javascript
+countZ(['A', 'Z', 'A', ['Z', 'A', 'Z'], 'A', 'Z']); // 2
+```
+
+The `countZ` function still returns 2 because the value at index 3 is not `"Z"` and is skipped. This is problematic because the array at index 3 contains letters we should be checking. Let's refactor the `countZ` function to check for nested arrays and then iterate over those arrays, counting any letters that match.
+
+```javascript
+function countZ (arr) {
+  var count = 0;
+  for (var i = 0; i < arr.length; i++) {
+    if (Array.isArray(arr[i]) {
+      for (var j = 0; j < arr[i].length; j++) {
+        if (arr[i][j] === "Z") {
+          count++;
+        }
+      }
+    } else if (arr[i] === "Z") {
+      count++;
+    }
+  }
+  return count;
+}
+
+countZ([ "A", "Z", "A", [ "Z", "A", "Z" ], "A", "Z" ]); // 4
+```
+
+The refactored functions works as expected. At first glance, the code looks a bit messy and difficult to read. The code will become further cluttered if we consider that our array may contain nested arrays with other nested arrays. We would need to write an infinite number of nested `for` loops in order to cover our bases and check for any level of nested arrays. Following this line of thought may also make our code more prone to programmer error.
+
+Let's stop for a moment and consider a plan of attack for this problem. We know how to handle counting letter matches for an unnested array: iterate over each index and check the value. If the array contains a nested array, we would iterate over the sub-array in the same way was the main array. Once we're done with the sub-array, we continue on with the main array. Let's put this into pseudocode.
+
+```javascript
+// declare variable that takes array as a parameter
+// declare count variable and assign initial value as 0
+// declare a subroutine function that takes an array as a parameter
+// iterate over array
+// is index array?
+// recursive call of subroutine on current index
+// otherwise
+// check if current value matches
+// increase count
+// invoke subroutine on argument array
+// return count
+```
+
+Translated to JavaScript:
+
+```javascript
+function countZ(arr) {
+  var count = 0;
+  var subroutine = function (array) {
+    for (var i = 0; i < array.length; i++) {
+      if (Array.isArray(array[i])) {
+        subroutine(array[i]);
+      } else if (array[i] === 'Z') {
+        count++;
+      }
+    }
+  };
+  subroutine(arr);
+  return count;
+}
+```
+
+The recursive calls to `subroutine` within the `for` loop effectively pause the current iteration and introduce a new sub-iteration. The sub-iteration goes over the nested array and runs to completion, then returns back to the paused iteration. The use of a `subroutine` is one way to create a recursive function. A `subroutine` sometimes brings clarity to the problem you are trying to solve. We could have, however, solved this problem without a `subroutine`. Check out that solution below.
+
+```javascript
+function countZ(arr) {
+  var count = 0;
+  for (var i = 0, len = arr.length; i < len; i++) {
+    if (Array.isArray(arr[i])) {
+      count += countZ(arr[i]);
+    } else if (arr[i] === 'Z') {
+      count++;
+    }
+  }
+  return count;
+}
+```
+
+This solution looks very similar to the previous one. But this solution does not use a `subroutine` and instead the entire function is called recursively. Structuring your function this way requires some tweaks to how the overall `count` is tracked through the recursive calls. Because each call of `countZ` creates and returns a local `count` variable, as each recursive call concludes, the return `count` must be added to the upper layer's `count`. Essentially each nested array is counted and then added to the upper layer.
+
+---
+
+Most problems that require recursion will have two key parts: a _base case_ and a _recursive case_. The base case serves as a way to prevent an infinite number of recursive calls. Without a base case, a recursive function continues to call itself until the call stack overflows and crashes your browser. The recursive case is where the function calls itself. A third part you may need, depending on your function, is a _termination condition_. If there is a chance an input may be provided that would circumvent the base case, it is best to include a termination condition to stop the function before it begins an infinite recursive call.
+
+We can examine these three parts with a `factorial` function. Recall that the factorial of a number, n!, is the product of multiplying the numbers 1 through _n_, 1 _ 2 _ ... \* n. A few things to note about factorials: 0! equals 1 and n must be greater than or equal to 0. We can use these edge cases to help ensure our recursion function doesn't run infinitely.
+
+Let's start writing our `factorial` function, keeping in mind the two edge cases above.
+
+```javascript
+function factorial(n) {
+  // Termination Condition //
+  if (n < 0) {
+    throw new Error('Number must be greater than or equal to 0');
+  }
+  // Base Case //
+  if (n === 0) {
+    return 1;
+  }
+  // Recursive Case //
+  // TODO: do recursion here
+}
+```
+
+We have two checks in the `factorial` function. We want to first check if the argument, `n`, is less than 0; if it is, throw an error and stop the function. If the number is not less than 0 but equals 0, return the number 1. These steps match the edge cases we identified earlier. We have one last case to cover and that is when the number is greater than 0.
+
+Let's consider a use case for the function: `factorial(5)`. We know we must somehow end up with the following chain of multiplication: 5 _ 4 _ 3 _ 2 _ 1. If `n === 5` at the first function call, then the next recursive call would be when `n === 4` which is `factorial(n - 1)`. In this function `n === 4` and the next recursive call would result in 3 being the argument. This pattern continues down until the argument is 0. At that point, `factorial(0)` returns 1 and the recursive calls begin to close.
+
+```
+5 * factorial(4)
+  4 * factorial(3)
+    3 * factorial(2)
+      2 * factorial(1)
+        1 * factorial(0)
+          factorial(0) returns 1
+        1 * 1 = 1
+      2 * 1 = 2
+    3 * 2 = 6
+  4 * 6 = 24
+5 * 24 = 120
+5! = 120
+```
+
+We can now finish our function.
+
+```javascript
+function factorial(n) {
+  // Termination Condition //
+  if (n < 0) {
+    throw new Error('Number must be greater than or equal to 0');
+  }
+  // Base Case //
+  if (n === 0) {
+    return 1;
+  }
+  // Recursive Case //
+  return n * factorial(n - 1);
+}
+```
+
+---
+
+Recursion is a powerful tool to have but difficult to master. Recursion comes in handy when iterating over the nodes of a tree or a graph data structure. In those cases, diagramming your ideas can help make the recursive calls clearer. It is easy to get lost in the call stack of recursive functions, and having a picture or model has aided me as a learning tool. I hope this post pulled back some of the complexity of recursion and helped you gain confidence trying it out in your own code.

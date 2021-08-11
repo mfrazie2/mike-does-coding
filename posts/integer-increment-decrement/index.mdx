@@ -1,0 +1,86 @@
+---
+title: Integer Increments and Decrements
+date: 2016-01-31
+---
+
+In Javascript, often times a variable assigned a number needs to be incremented or decremented to keep track of a counter or to iterate through an array. There are several ways that a variable can be changed by a value. With such options it can be difficult to know when each option should be used.
+
+```javascript
+// Method 1
+var i = 1;
+i = i + 1;
+console.log(i); // >> 2
+```
+
+After Method 1 resolves, it is not surprising to find that `i` is equal to 2. A console log of `i` proves that. This is an intuitive method to increase the value of `i` by a some number. The method reads like a math equation and clearly demonstrates the intent of the expression.
+
+```javascript
+// Method 2
+var j = 1;
+j += 1;
+console.log(j); // >> 2
+```
+
+Method 2 is also fairly intuitive. This is a shorthand version of Method 1 and accomplish the same increment. Additionally, the `-`, `*`, and `/` operators can also be used in the same way as the `+` operator.
+
+```javascript
+//Method 3
+var k = 1;
+k++;
+console.log(k); // >> 1
+```
+
+This is unexpected. Why does `k` resolve to 1 after being acted upon by the `++` operation? The reason that `k` resolves to 1 after the `++` is because the current state of `k` is held onto before it is incremented. The current state of `k` is returned and then `k` is set to its new value. This causes `k` to only resolve to its incremented value after its current state has been used.
+
+```javascript
+//Method 3
+var k = 1;
+k++;
+console.log(k); // >> 1
+console.log(k); // >> 2
+```
+
+Method 3 shows up often in for-loops iterating over arrays.
+
+```javascript
+for (var k = 0; k < myArray.length; k++) {
+  console.log(myArray[k]);
+}
+```
+
+When the conditions of the for-loop are set on the first iteration, `k` will remain equal to 0 until the code block is finished. When the conditions of the for-loop are set for the second iteration, the new value of `k` is used and is equal to 1.
+
+```javascript
+// Method 4
+var m = 1;
+++m;
+console.log(m); // >> 2
+```
+
+Method 4 looks strikingly similar to Method 3. Both use the `++` operator , but have them positioned on opposite sides of the variable. In Method 4, `m` is incremented first, and then its state is returned. This causes `m` to immediately resolve to its incremented value. Additionally, Methods 3 and 4 can be used with the `--` operator, following the same pattern as above.
+
+The effects of Method 3 and 4 may be more easily seen in an example.
+
+```javascript
+// Method 3
+var x = 1;
+var y = x++;
+
+console.log(y); // >> 1
+console.log(x); // >> 2
+```
+
+Here, `y` is assigned to the initial value of `x` and then `x` is incremented. Therefore, `y` is assigned the value of 1 and `x` increments and resolves to 2.
+
+```javascript
+// Method 4
+var w = 1;
+var z = ++w;
+
+console.log(w); // >> 2
+console.log(z); // >> 2
+```
+
+In this case, `w` is incremented first and resolves to 2. Variable `z` is then assigned the value of `w`, which is 2.
+
+Each method has its place in JavaScript. As a developer, you must choose the method that makes the most sense to you and to anyone, including yourself, that may look at your code down the line.

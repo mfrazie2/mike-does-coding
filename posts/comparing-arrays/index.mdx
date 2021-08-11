@@ -1,0 +1,64 @@
+---
+date: 2017-08-06
+title: Comparing Arrays
+---
+
+I was browsing the [learnjavascript](https://www.reddit.com/r/learnjavascript/) subreddit when I came across an interesting question. The gist of the request was how to determine if an array is empty. The simple answer is to check if the array has a length equal to 0. The solutions the asker tried got me thinking about why the following isn't possible.
+
+```javascript
+let a = [];
+
+if (a === []) {
+  console.log(`array is empty`);
+}
+```
+
+In this post, I'll explore why it's not possible to compare two empty arrays and explain how variable references to arrays work within JavaScript.
+
+## Comparing Arrays
+
+Consider the following example.
+
+```javascript
+[] === []; // evaluates to false
+```
+
+The following line does the same.
+
+```javascript
+new Array() === new Array(); // false
+```
+
+The `new Array()` call creates an empty array. In this case, we are instantiating two new instances of an array-type object. We can see this is true in the next example.
+
+```javascript
+new Array() === []; // evaluates to false
+```
+
+Again, these are two separate instances of arrays.
+
+## Reference Variables
+
+Now for something a bit more complicated. When a variable is assigned the value of an array, the variable is a reference (pointer) to the array in memory. If another variable is assigned to the previous variable, it is also a reference to the same array in memory.
+
+```javascript
+let a = [];
+let b = a;
+a === b; // evaluates to true
+```
+
+`a` is assigned the value of an empty array. `b` is assigned the value of `a` which is a reference to the empty array. Here, both `a` and `b` are pointing the same array in memory. Because both variables point the same object, they pass an equality check. Let's mess with this a bit.
+
+```javascript
+let a = [];
+let b = a;
+a === b; // evaluates to true
+a = [];
+a === b; // evaluates to false
+```
+
+On line four, `a` is assigned the value of a new empty array. It may look like the assignment is the same on line one, but it is a new instance of an array. For this reason, the comparison on line five evaluates to false.
+
+## Conclusion
+
+This is an important concept in JavaScript to explore and understand. You can test this with primitive types (strings, numbers, booleans, symbols, null, undefined) and objects (arrays, objects, maps, sets). Run through the same sequence of comparisons and variable assignments; it is worthwhile playing around with this concept. If you have questions, something I missed or didn't explain correctly, [drop me a line](mailto:me@mikedoescoding.com).

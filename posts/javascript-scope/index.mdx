@@ -1,0 +1,116 @@
+---
+date: 2016-06-23
+title: JavaScript Scope
+---
+
+Variable scope in JavaScript is an important concept to understand well in order to write better code and debug easier. Scope can be tricky to get _right_ for those new to programming, but can still trip up those with more experience. In this post, we’ll explore scope, drawing distinctions between global and lexical, and briefly discuss the advantages of the new `let` keyword introduced in ES2015.
+
+Within a JavaScript program, there are two general scopes: global and local. Any variable declarations made within a function are said to be in a local scope. Any variable declarations made outside of a function are said to be in the global scope.
+
+```javascript
+var globe = "I'm on the global scope!";
+var fn = function () {
+  var local = "I'm in a local scope!";
+};
+```
+
+A new local scope is introduced when a function is declared. Functions create their own scope and any variables declared within a function are not accessible outside of the function. Using the example above, `local` is within the scope of `fn`. If `local` were referenced on the global scope, outside of `fn`, a reference error would be thrown. There is no `local` variable on the global scope; only in the scope of `fn`.
+
+However, if `globe` were referenced in `fn`, there would be no error.
+
+```javascript
+var globe = "I'm on the global scope!";
+var fn = function () {
+  var local = "I'm in a local scope!";
+  console.log(globe); // This will work!
+};
+console.log(local); // This will not work!
+```
+
+When the interpreter comes across `globe` inside the `fn` function, it will search for a variable with the same name within the function scope first. Not finding a matching variable, the interpreter will look on the next scope “layer” up. This will be the global scope and the `globe` variable exists here. It’s value will be passed into the `console.log` with no errors.
+
+Variable scope is important when considering which variables should be accessible by all parts of your program. All variables on the global scope are available to all function scopes. But local variables are available only to the function in which they are declared. As we see in the above example, variable lookups operate like one-way mirrors. Function scopes are able to see out through the mirrors, accessing variables on external scopes. The global scope cannot see in to the local scopes of variables and is limited to its scope.
+
+```javascript
+var globe = "I'm on the global scope!";
+var fn = function () {
+  var local = "I'm in a local scope!"
+  Var innerFn = function() {
+    Var inner = "I'm in an inner scope!";
+    console.log(local); // This will work!
+    console.log(global); // This will work!
+  };
+  console.log(inner); // This will not work!
+  console.log(global); // This will work!
+};
+console.log(inner); // This will not work!
+console.log(local); // This will not work!
+```
+
+The example above illustrates how variables declared in nested functions are available only within their local scope. The `innerFn` scope has access to the variables in the `fn` scope and global scope; but the `inner` variable is only available to the `innerFn` scope.
+
+---
+
+Having laid out the foundation of scope, we can now dive into the problems that ignoring scope can lead to. Consider the following examples.
+
+```javascript
+var name = 'Mike';
+function sayMarty() {
+  var name = 'Marty';
+  console.log(name);
+}
+sayMarty(); // "Marty"
+console.log(name); // "Mike"
+```
+
+In the above example, there are two variables called `name`: one is on the global scope and the other is in a local scope. When `sayMarty` is invoked, the `name` variable within its scope takes precedence over the global scope variable. This is why we see `"Marty"` logged to the console. The global `name` variable is unaffected and maintains its previous value, `"Mike"`.
+
+```javascript
+var name = 'Mike';
+function sayScarlet() {
+  name = 'Scarlet';
+  console.log(name);
+}
+sayScarlet(); // "Scarlet"
+console.log(name); // "Scarlet"
+```
+
+This example has a bug in it. Unlike the previous code, the `sayScarlet` function appears to have changed the value of the global `name` variable. Within the scope of `sayBye`, the `name` variable is assigned a new value. Note that the keyword `var` is absent. In this instance, `name` is referring to the variable on the global scope which means the assignment will affect the global scope. This is why the final `console.log(name)` produces `"Scarlet"`.
+
+The above code does not follow best practices. It is best to keep the global scope uncluttered with variables. If your code requires variables, it would be best to declare those within the local scope of a function and to always use the `var` keyword.
+
+---
+
+Unlike other programming languages, JavaScript does not have block scoping. Block scope would include the code between the curly braces of an `if` conditional or within a `for` loop. Because there is no block scoping the following buggy code is possible.
+
+```javascript
+var name = 'Mike';
+
+if (2 === 2) {
+  var name = 'Marty';
+  console.log(name); // "Marty"
+}
+console.log(name); // "Marty"
+```
+
+The `name` variable within the curly braces of the `if` conditional refers the global `name` variable. The a new value is assigned and changes our expectations of what should be logged.
+
+In the ES2015 update, two new keywords were introduced for variable declarations: `let` and `const`. We will examine `let`. The differences between `var` and `let` are significant. I encourage you to visit the MDN page on [let](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) to explore those differences.
+
+Let's refactor the above code to use `let`.
+
+```javascript
+let name = 'Mike';
+
+if (2 === 2) {
+  let name = 'Marty';
+  console.log(name); // "Marty"
+}
+console.log(name); // "Mike"
+```
+
+By using `let` we are able to take advantage of block scoping. The `name` declared within the block of the `if` conditional is separate from the `name` on the global scope. The `let` keyword allows you to declare variables that are unique to the space between curly braces, `{}`, in `if` conditionals or `for` loops.
+
+---
+
+I hope this post has clarified some of the confusion surrounding scope in JavaScript. Scope is a topic that requires you to play around with declaring variables and assignment at different points in your script. Play around with the examples provided. Write your own examples. Find toy problems that deal specifically with scope. With enough practice, you'll be a scope master!

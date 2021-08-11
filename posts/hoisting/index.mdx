@@ -1,0 +1,61 @@
+---
+date: 2016-06-29
+title: Hoisting
+---
+
+Here is a challenge for you. Can you accurately predict the output of this function?
+
+```javascript
+var foo = 'bar';
+
+function baz() {
+  console.log(foo);
+  var foo = 'not bar';
+  console.log(foo);
+}
+
+baz(); // What will appear in the console?
+```
+
+Before reading the rest of this post, take some time to hypothesize what you expect to see, then test that prediction.
+
+---
+
+I hope the message logged to the console was surprising. When I first saw this prompt, I predicted that `"not bar"` would be logged twice. The variable `foo` is local to the `baz` function and that value would be logged. I knew enough about [scope](http://www.mikedoescoding.com/JavaScript-Scope/) to know the global `foo` would not interfere. I was confounded by seeing `undefined` first! With some slight guidance, I stumbled into the realm of _hoisting_ in JavaScript. In this post, I'll discuss variable hoisting in ES5 and how ES2015 can prevent the above behavior.
+
+###Hoisting in ES5
+
+There are two things happening in the following expression, `var foo = "bar"`. The first is a variable is being intialized and a portion of memory set aside. The variable is then assigned a value, in this case the string `"bar"`. This is, however, not the complete picture when the interpreter begins to run.
+
+Before the interpreter starts executing code, it runs through the lines and declares all of the variables. It does not assign the values at this time. The values are assigned as the interpreter comes across those lines. When this occurs, we can imagine the code looking something like this inside the `baz` function.
+
+```javascript
+function baz() {
+  var foo; // foo declaration is moved to top
+  console.log(foo);
+  foo = 'not bar'; // foo is assigned a value
+  console.log(foo);
+}
+```
+
+This is hoisting in action. The variables are pulled to the top of their respective scopes and declared with no value (`undefined`). Then, when the interpreter comes the assignment, the variable is given a value. In order to prevent this behavior from having unintended effects on your code, place your variable declarations at the top of each scope.
+
+---
+
+###Variable Declarations in ES2015
+
+There are two new ways to declare variables in ES2015: `let` and `const`. Both `let` and `const` hoist variables to the top of the scope (block, global, or local). However, referencing the variable _before_ the declaration results in a `ReferenceError`. Let's look at an example.
+
+```javascript
+let foo = 'bar';
+
+function baz() {
+  console.log(foo);
+  let foo = 'not bar';
+  console.log(foo);
+}
+
+baz(); // ReferenceError: foo is not defined
+```
+
+Despite the variable `foo` being hoisted to the top of the `baz` function scope, the interpreter threw an error as if the variable had never been declared. This is a so-called "temporal dead zone". The variable is not accessible until the declaration has been processed. In the above example, removing the first `console.log` statement, we will see the expected output. When using `let` or `const`, attempts to use a variable declared within the same scope will result in a `ReferenceError`. This can be helpful to avoid the unexpected `undefined` value we saw when using the `var` keyword.

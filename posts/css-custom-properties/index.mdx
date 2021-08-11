@@ -1,0 +1,119 @@
+---
+date: 2018-01-20
+title: CSS Custom Properties
+---
+
+A while back I was working through Wes Bos's [JavaScript30](https://javascript30.com/) course and got excited when I went through the module on CSS variables. After completing the module, I realized I could combine the variables with a science topic: light mixing. Here is a link to a working demo of the application on [CodePen](https://codepen.io/mfrazier/full/mpvXqN/). In this post, I'll cover CSS Custom Properties, how to use them and how to update the values using JavaScript.
+
+## CSS Custom Properties
+
+Custom properties are relatively new to CSS, having been introduced in late-2015/early-2016. Custom properties can be referred to as CSS variables, which is how I'll refer to them in this post. They are still an experimental feature and not fully supported by all browsers; most modern web browsers support their usage. [CanIUse](https://caniuse.com/#search=css-variables) is a great reference for determining what features of CSS browsers support.
+
+I'd encourage you to read through the [W3C candidate recommendation document](https://www.w3.org/TR/css-variables/). It was an incredibly informative article and provided a great deal of insight regarding the usage and problems to watch out for.
+
+## Importance of CSS Variables
+
+In a programming language, variables are typically used to capture a specific value for later use. This concept exists in stylesheets but requires the use a preprocessor such as Less, Sass or Stylus. With these supersets of CSS, it's possible to create a file full of variables that can then be referenced in other stylesheets. If you want to change the value across the whole application, there is only one place is must be edited.
+
+```sass
+// Example of Sass variables
+$background: red;
+$headersize: 16px;
+h1 {
+  background-color: $background;
+  font-size: $headersize;
+}
+```
+
+This is a great place to start, but there are a few problems when working with preprocessor variables. I'll discuss those after we see the power of the new CSS variables.
+
+## Using CSS Variables
+
+Declaring and using variables within a style sheet is straightforward. Within a selector, here the `:root` pseudoselector, variables are declared using two hyphens, `--`, and the name, followed by the value. The value can be simple, such as a color or pixel, or it can be more complex, like a dropshadow definition. Check out the examples below.
+
+```css
+:root {
+  --firstVariable: red;
+  --headerSize: 16px;
+  --dropshadow: 1px 1px 2px 2px rgba(100, 100, 100, 0.2);
+}
+```
+
+By declaring the variables in the `:root`, they will be globally available. In this case, `:root` can be thought of as the `html` selector. We can use the variables in any place we like by using the `var()` function. This function takes in the variable name as an argument.
+
+```css
+h1 {
+  font-size: var(--headerSize);
+  color: var(--firstVariable);
+}
+```
+
+It's as easy as that.
+
+### Caveat I
+
+Notice that we declared `--headerSize: 16px`; we could declare it without the pixel scalar and have assigned a number to the variable, like so: `--headerSize: 16`. If we did this and wanted to use the variable as a `font-size`, we would have to do the following.
+
+```css
+h1 {
+  // This will work
+  font-size: calc(var(--firstVariable) * 1px);
+
+  // This will not
+  font-size: var(--firstVariable) px;
+}
+```
+
+The variable values can't be changed simply by adding the scalar (`px`, `em`, `%`, etc) after it. The `calc()` function is needed to create the appropriate value.
+
+### Caveat II
+
+Above I stated that variables declared in `:root` are globally available. This means that any time the variable is used, the value in `:root` will be used. If you wanted to create a different style for every `p` element, you can create variables that are scoped to that selector. Follow the same steps as above but instead use `p` in place of `:root`. This gives you finer control over how the variables cascade in the document.
+
+## Why Does This Matter?
+
+At this point, you may be thinking, "Why would I ever use CSS variables if I can use Sass or Less?" There is a very compelling reason why you would want to: CSS variables can be manipulated at run time!
+Preprocessors are compiled down to CSS. During compilation, references to variables are substituted for the defined value. Once these are set, that's it. The variables in Sass and Less are static. The variables in CSS, however, are mutable. If a value changes, the browser redraws immediately after the change.
+The concept of changing CSS values is nothing new; there are loads of documentation, StackOverflow questions and blogs about how to do this. Imagine though you needed to allow a user with colorblindness to alter the palette of your application. Letting a user choose a palette that is best for her and saving it to local storage for subsequent visits would give her the best experience possible. Let's look at how this could be implemented using and not using CSS variables.
+
+## Changes _without_ Variables
+
+The API for manipulating styles with JavaScript is well documented through both MDN and StackOverflow. It may take some time to figure out exactly how to make the changes, but more than likely, you'll find an answer. In the example app, we want to change the value of the red square based on the value of the slider. This value will become the `r` in the `rgba`. This value needs to also be updated in the mixed box that combines all the values from the red, green, blue and alpha sliders.
+First we need to get a reference to the slider, the red box and the mix box. Then we access the color properties in the style of the two boxes. We then figure out a way to either slice up the `rgba(val,val,val,val)` string or use a Regular Expression in order to make a change to the appropriate value. Finally, we set the color properties of the boxes to the appropriate values. And we're done.
+
+```javascript
+// Get the style prop of the element via window.getComputedStyle
+const color = window.getComputedStyle(
+  document.getElementsByClassName('box mixed')[0],
+  null
+).backgroundColor;
+// color = 'rgba(222,222,222,0.5)';
+// Get the prop string down to an array of strings
+let rgbaArray = color.replace('rgba(', '').replace(')', '').split(','); // [ '222', '222', '222', '0.5' ]
+// Replace the first value
+rgbaArray[0] = '100';
+// Create a new string after joining the array
+const newColor = `rgba(${rgbaArray.join(',')})`; // rgba(100,222,222,0.5)
+// Set the style prop of the element
+document.getElementsByClassName('box mixed')[0].style.backgroundColor =
+  'rgba(100,222,222,0.5)';
+```
+
+This code could be optimized for reusability and abstracted into helpers.
+
+## Changes _with_ Variables
+
+When it comes to changing CSS variables, there is a straightforward API to use. Assuming your variables are on the `:root` element, this is how you can access a variable called `red-color`.
+
+```javascript
+window.getComputedStyle(el, null).getPropertyValue('--red-color').trim();
+document.documentElement.style.setProperty(`--red-color`, value);
+```
+
+You may have noticed it wasn't necessary to get references to the red box and the mix box. By updating the CSS variables, which are ingested in the classes, we directly affect the styling without having to explicitly manipulate the styles of the elements. This is a great benefit because every element using the variable will be redrawn to reflect the new value. You don't have to worry about forgetting to include an element in the update; when the variable changes, so does each element using the element.
+
+## Wrap Up
+
+In this post, we covered an introduction to CSS custom properties, more commonly known as CSS variables. We saw that CSS variables are different than the variables used in CSS preprocessors and have benefits over the preprocessor counterparts. Styles manipulated via JavaScript and CSS variables follow a straightforward API to get and set a value. I encourage you to dive into the color mixer sample app and play around with setting/unsetting variables. Open the developer tools and take note of how the variables change.
+
+I hope you found this to be a helpful introduction to CSS variables and you can envision a use case in your future projects. As always, if there is something I didn't explain completely or is wrong, or to tell me how dope CSS variables are, [drop me a line](mailto:me@mikedoescoding.com).

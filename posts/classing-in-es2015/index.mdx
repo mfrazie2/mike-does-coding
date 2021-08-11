@@ -1,0 +1,79 @@
+---
+date: 2016-11-20
+title: Classing in ES2015
+---
+
+In a previous [post](http://www.mikedoescoding.com/Classing-in-ES5/), I explained how classes can be made using ES5 syntax. In ES5, constructor functions are used to create class-like objects. When creating a subclass, it is necessary to set up the inheritance chain and set the correct `constructor` property. In ES2015, the `class` keyword is used to create classes and the `extends` keyword is used to create subclasses. Using the same examples of a `Car` and `Van` from the previous post, the classes will be refactored to use ES2015 syntax.
+
+The ES2015 update introduced a new keyword for creating classes, `class`. The syntax is 'sugar' over the existing prototype-based inheritance. The `class` keyword is not a new object-oriented inheritance paradigm. The new syntax for creating a class may look foreign the first time, but I have found the syntax more readable and understandable. The following is a basic example of building a class with a single method.
+
+```javascript
+class AwesomeClass {
+  constructor(className) {
+    this.className = className;
+  }
+  printClassName() {
+    console.log(`This is our awesome class name: ${this.className}!`);
+  }
+}
+
+const ourClass = new AwesomeClass('JavaScriptonites');
+
+ourClass.printClassName();
+// 'This is our awesome class name: JavaScriptonites!'
+```
+
+The `AwesomeClass` syntax is a departure from the typical ES5 class construction. (Check out the previous [post](http://www.mikedoescoding.com/Classing-in-ES5/).) Take note of a few things here.
+
+- We still use the keyword `new` to create an instance.
+- Methods are placed directly in the class definition and use the shorthand syntax.
+- The `constructor` method sets up the properties of the class and the call signature for creating a new instance.
+
+---
+
+Now that we know a bit more about how to use the `class` keyword, let's start our refactor with the `Car` parent class. Recall `Car` instances take a location, `loc`, as an argument when instantiated and has two methods, `move` and `rev`.
+
+```javascript
+class Car {
+  constructor(loc) {
+    this.loc = loc;
+  }
+  move() {
+    this.loc += 2;
+    console.log(this.loc);
+  }
+  rev() {
+    console.log('vroom');
+  }
+}
+```
+
+The `Car` class looks clearer and requires less characters. To create a subclass, the `Van` class, we will use the `extends` keyword. Recall that subclassing in ES5 requires `call`ing the parent constructor function in the context of the child class. In order to set up the inheritance chain, the child prototype must be created to refer to the parent's prototype and the constructor property on the child assigned. The `extends` keyword does this behind the scenes. Let's look at the `Van` class.
+
+```javascript
+class Van extends Car {
+  constructor(loc) {
+    super(loc);
+    this.boosts = 2;
+  }
+  move() {
+    this.loc += 1;
+    console.log(this.loc);
+  }
+  nitro() {
+    this.boosts -= 1;
+    super.move();
+    super.move();
+    console.log('new location of the van:', this.loc);
+    console.log('boosts remaining:', this.boosts);
+  }
+}
+```
+
+Here the constructor method for the `Van` takes a `loc` and calls `super(loc)`. In this case, `super` refers to the parent class, `Car`, and is an invocation of the parent class constructor method in the context of the child class. `Van` instances will receive a `loc` property with a value equal to the provided argument and a `boosts` property.
+
+Notice that the `Van` has its own `move` method. This method overrides the method on the parent class. Within the `nitro` method, again, there are calls to methods on the parent class. The calls of `super.move()` are done to invoke the parent method in the context of the child method. In my opinion, this syntax is much clearer and easier to read. There is less overhead in deciphering what each line is doing.
+
+---
+
+The first time I saw ES2015 classes I didn't like the syntax. I was used to a constructor function and adding methods to the prototype. However, with more exposure, I became convinced this was a positive addition to the language. As with anything, it takes time and practice to understand the new syntax. I encourage you to continue reading more about the `class` keyword and practice using the new syntax by refactoring your old (or existing) code. It's also worthwhile to checkout the [MDN page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes) for more information, examples, and specifics.

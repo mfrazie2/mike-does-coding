@@ -1,0 +1,135 @@
+---
+date: 2017-08-01
+title: Array Methods - Map
+---
+
+When considering the most versatile and extensible Array methods, I would argue that `map` and `reduce` are at the top of that list. In this post, I'll discuss how to create your version of the native `map` method utilizing a previous native method we already made in a previous [post](http://www.mikedoescoding.com/Array-Methods-ForEach/). The `Array.prototype.map` method allows you to iterate over an array of items, perform an operation on each item and return an array back of the results of the operation. To give you an idea, we want to emulate the following.
+
+```javascript
+[1, 2, 3, 4, 5].map(num => num * num); // [1,4,9,16,25]
+```
+
+Take a moment to think about how we might go about this and what might be going on behind the scenes.
+
+## Recall `looper`
+
+In a previous post about the `forEach` method, we created a function called `looper`, which took an array and a function as arguments. Below is the implementation. (If this is at all unfamiliar, please be sure to check out my post on [Array Methods - ForEach](http://www.mikedoescoding.com/Array-Methods-ForEach/) before proceeding.)
+
+```javascript
+function looper(array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    callback(array[i]);
+  }
+}
+```
+
+To quickly recap: the `callback` function is invoked on each item within the passed in `array`. This is a very useful function when you need to iterate over an array and do some operation on each item. You'll save some time by not having to copy and edit `for`-loop syntax.
+
+Now that we have `looper` fresh in our minds, let's go on to `mapper`.
+
+## Mapper
+
+As mentioned above, the `Array.prototype.map` function invokes a function on each item in an array and returns those results in a new array. The original array is unmutated. This is a very important criterion. The original array must not be mutated!
+
+It should be sensible to reason that the `mapper` function must iterate over an array and invoke a function over them. It would also stand to reason that `mapper` should be reusable, so we don't want to hardcode any array instances into it. The call signature of `mapper` will be very similar to `looper`. Let's start there.
+
+```javascript
+function mapper(array, callback) {
+  /* some logic goes here */
+}
+```
+
+The `mapper` function must return an array and this array cannot be a mutation of the passed in array. This means we must create an array within the function and then return it at the end.
+
+```javascript
+function mapper(array, callback) {
+  let results = [];
+  /* some logic goes here */
+  return results;
+}
+```
+
+The logic bit of this might get a bit hairy. I struggled with this for a while when I first started, so I'll take you through what helped me.
+
+## Mapper Logic
+
+To start, we know the `mapper` function must iterate over every item in the array and invoke a function on the items. This sounds like a great use case for the `looper` function we already have!
+
+```javascript
+function mapper(array, callback) {
+  let results = [];
+  looper(/* what goes here? */);
+  return results;
+}
+```
+
+Recall, `looper` takes an array and a function as arguments. The `array` argument is staightforward; it is the same array that is passed into `mapper`. The function argument is where things get tricky. Let's take a step back and look at how we might use `mapper`.
+
+```javascript
+let arr = [1, 2, 3, 4, 5];
+let squared = mapper(arr, squareN);
+
+function squareN(num) {
+  return num * num;
+}
+
+console.log(squared); // [1,4,9,16,25]
+```
+
+Notice the `squareN` function takes in a value and `return`s that value squared. The `return` keyword is important here because the result of the operation needs to be put into the resulting array.
+
+Getting back to our function implementation.
+
+```javascript
+function mapper(array, callback) {
+  let results = [];
+  looper(array /* function */);
+  return results;
+}
+```
+
+The `callback` passed to `looper` must do a couple things. It needs to 1) invoke the function passed to `mapper` and 2) put the results into the `results` array. We can use `Array.prototype.push` for this. The function passed into `looper` will be an anonymous function that does both.
+
+```javascript
+function mapper(array, callback) {
+  let results = [];
+  looper(array, function (item) {
+    let value = callback(item);
+    results.push(value);
+  });
+  return results;
+}
+```
+
+## Seeing Mapper in Action
+
+The final step to understanding how this all fits together, and will make several other methods clearer, is stepping through the function one value at a time. We'll use the `squareN` function again.
+
+```javascript
+let arr = [1, 2, 3, 4, 5];
+let squared = mapper(arr, squareN);
+
+function squareN(num) {
+  return num * num;
+}
+```
+
+|   `i`   | `array[i]` | `value` |   `results`   |
+| :-----: | :--------: | :-----: | :-----------: |
+| initial |            |         |      []       |
+|    0    |     1      |    1    |      [1]      |
+|    1    |     2      |    4    |     [1,4]     |
+|    2    |     3      |    9    |    [1,4,9]    |
+|    3    |     4      |   16    |  [1,4,9,16]   |
+|    4    |     5      |   25    | [1,4,9,16,25] |
+
+When `mapper` is called, it iterates using `looper` calling the function on each item. Each item is passed to the `callback` function and assigned to `value`. The `value` is pushed to the `results` array. When the iteration is complete, the `results` array is returned.
+
+## Final Thoughts
+
+This is a tough concept to wrap your head around. It took me several weeks and multiple resources to finally understand. A few resources I used were:
+
+- [Eloquent JavaScript](http://eloquentjavascript.net/05_higher_order.html)
+- [JavaScript is Sexy](http://javascriptissexy.com/understand-javascript-callback-functions-and-use-them/)
+
+As you keep practicing, these functions become easier to reason about and you'll soon find yourself using them in your own code. If you found an error or have a question, [drop me a line](me@mikedoescoding.com)!

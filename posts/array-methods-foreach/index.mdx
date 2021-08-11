@@ -1,0 +1,134 @@
+---
+date: 2017-07-25
+title: Array Methods - ForEach
+---
+
+There are many baked-in tools at a developer's disposal when working with arrays. One of the most basic and useful methods is `Array.prototype.forEach`. We've all been there, writing `for`-loops over and over again, copying the same syntax and making changes to the code in between the curly braces. The `forEach` method allows you to focus on the important parts, the code between the curly braces, and doesn't require copying the same syntax. In this post, I'll explain how to implement your own version of `forEach`, similar to [Lodash](https://lodash.com/docs/#forEach) or [Underscore](http://underscorejs.org/#each). This is the first in a series of posts to explore functional programming using Array methods as examples.
+
+## For Loops
+
+To start, we must go back to humble begins. Let's imagine we have a task to say 'Hi' to all of the people listed in an array, `['Matt', 'Jessica', 'Luke', 'Danny']`. If we know the number of elements in the array, we could solve the task like this.
+
+```javascript
+let arr = ['Matt', 'Jessica', 'Luke', 'Danny'];
+
+console.log(`Hi, ${arr[0]}!`); // Hi, Matt!
+// ...
+console.log(`Hi, ${arr[3]}!`); // Hi, Danny!
+```
+
+Unfortunately, most of the time the length of the arary will be unknown; it could be one element or 10,000. There's no way of knowing and planning ahead for every possibility wouldn't make sense. We can make our solution more versatile by utilizing a `for`-loop. Now the length of the array doesn't matter; we can say `Hi` to everyone in it.
+
+```javascript
+let arr = ['Matt', 'Jessica', 'Luke', 'Danny'];
+
+for (let i = 0; i < arr.length; i++) {
+  console.log(`Hi, ${arr[i]}!`);
+}
+// Hi, Matt!
+// ...
+// Hi, Danny!
+```
+
+This solution is by far superior to the original. If there are more than four elements in `arr`, the appropriate message will be displayed. This might be a good stopping point but we've been given a new list of names we also want to say `Hi` to, `['Wilson', 'Cornell', 'Stryker', 'Frank']`. Let's revise the previous solution to now say `Hi` to this new group.
+
+```javascript
+let arr = ['Matt', 'Jessica', 'Luke', 'Danny'];
+let arr2 = ['Wilson', 'Cornell', 'Stryker', 'Frank'];
+
+for (let i = 0; i < arr.length; i++) {
+  console.log(`Hi, ${arr[i]}!`);
+}
+// Hi, Matt!
+// ...
+// Hi, Danny!
+
+for (let i = 0; i < arr2.length; i++) {
+  console.log(`Hi, ${arr2[i]}!`);
+}
+// Hi, Wilson!
+// ...
+// Hi, Frank!
+```
+
+We solved the task! However, this solution isn't DRY. DRY is an acronym for "Don't Repeat Yourself". In the solution above, we have repeated the same type of iteration over two arrays. The goal here is to create reusable pieces that we can compose together to complete the task. To start, we will abstract the `for`-loop logic into a standalone function.
+
+```javascript
+let looper = function (array) {
+  for (let i = 0; i < array.length; i++) {
+    console.log(`Hi, ${array[i]}!`);
+  }
+};
+
+looper(arr);
+// Hi, Matt!
+// ...
+// Hi, Danny!
+
+looper(arr2);
+// Hi, Wilson!
+// ...
+// Hi, Frank!
+```
+
+This is getting closer to what we want. The `looper` function takes an array as an argument, iterates over each element and logs a message to the console. An array of any length can be passed in as an argument and the correct number of messages will be logged. However, consider what we would need to do if we want to do more than log messages to the console? How can the call signature of `looper` be altered?
+
+## Callback Function
+
+The `looper` function is great and would fill all our needs if the only thing we needed to do was log `Hi, ${name}!` for every name in our arrays. But our requirements keep shifting, so we need to be able to pass in custom messages for the arrays. Let's take a look at how we could go about meeting the new reqs.
+
+At first blush, we could write variations of `looper` with the custom messages. Think for a moment: is this a DRY approach? The point of creating the looper method was to reduce the amount of code we had to write. Repeating the logic of `looper` goes against our goal. We can, instead, use a callback function to be invoked on every element in the array. The following is the new call signature of `looper`.
+
+```javascript
+let looper = function (array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    callback(array[i]);
+  }
+};
+```
+
+The `callback` parameter is a placeholder for a function defined elsewhere (or inline). Remembering that `callback` is a function, the `looper` function now invokes `callback` with the element in the array as an argument. Here is how we would call `looper` so we get the same output as before.
+
+```javascript
+let looper = function (array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    callback(array[i]);
+  }
+};
+
+let sayHi = function (name) {
+  console.log(`Hi, ${name}!`);
+};
+
+looper(arr, sayHi);
+```
+
+The `callback` style here can be quite confusing. It took me a while to create a mental model of how the `callback` is invoked in the `looper` function. It was only after writing many examples and trivial examples that it started to click. To show what I mean, let's take a look at a final example.
+
+```javascript
+looper([1, 2, 3, 4, 5], squared);
+
+function squared(num) {
+  console.log(num * num);
+}
+```
+
+Going through the `looper` call one iteration at a time, it may become clear how the callback function, `squared`, is being invoked. In the first time through the loop, `i = 0` and `array[i] = 1`. The `callback` function is invoked which is the `squared` function, so we get `squared(1)`. This logs `1`. In the next time through the loop, `i = 1`, `array[i] = 2` and `squared(2)` logs `4`. The next iteration logs `9` because `i = 2`, `array[2] = 3` and we call `squared(3)`. And so on until the array is complete.
+
+## Array.prototype.forEach
+
+Once we feel comfortable using our own `looper` function, we can use the native `forEach` method. In order to use this method, we must have an array and on that array we call `.forEach(/* some function */)`. Let use the previous example and convert it to using the native method.
+
+```javascript
+let arr = [1, 2, 3, 4, 5];
+
+arr.forEach(squared);
+// OR
+arr.forEach(num => console.log(num * num));
+```
+
+All we have to do is pass in the function we want called for every item in the array. This can be a function declared elsewhere, or one defined inline in the `forEach` call. The choice is yours.
+
+## Conclusion
+
+`Array.prototype.forEach` is useful tool when you want to cut down the number of `for`-loops you write. Beginning with the creation of your own implementation, you will gain a deeper understanding of how the native method operates behind-the-scenes. This is a technique I used when I was first learning JavaScript and I still use it today when working with a new-to-me method. In the next post, we'll take a look at `Array.prototype.map`, building up from our own `looper` function.

@@ -1,0 +1,169 @@
+---
+date: 2017-09-24
+title: Array Methods - Reduce
+---
+
+I have a confession and I am not happy to say this. Recently, I forgot how to correctly implement the callback function to `Array.prototype.reduce`. This served as the starting point for this series of posts on Array Methods. To be fair, I had simply forgotten the order of the accumulator and the current item in the call signature. So, not a huge deal, but I was still stuck for a moment trying to figure out what was incorrect. Luckily, [MDN.io](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) was there for the assist! In this post, I'll cover what `reduce` is doing under-the-hood, go through how to implement `reduce` and go through some use cases.
+
+`Array.prototype.reduce` is one of the most interesting and powerful methods included with every array instance. It can be used for so many things that the cases below are barely scratching the surface. The gist of `reduce` is that a function is applied to every element in the array and the value of the element is accumulated. This means an array can be summed to a single value or transformed to an object with keys for each element and a count of each element, as examples.
+
+## Reduce in Action
+
+To start, I think we need to see an example how the `reduce` method can be used and why. Let's say we are given the following prompt.
+
+```
+Given an array of single string characters, create an object that has a key for each character and a value of its count.
+
+Example:
+  Input: ['a', 'b', 'c', 'd', 'c', 'c', 'a', 'b', 'd', 'b', 'c']
+  Output: { 'a' : 2, 'b' : 3, 'c' : 4, 'd' : 2 }
+```
+
+As a human, this seems like a simple enough task. If I were to explain how to do this, it might go like this: Go over each element in the list and tally the instances of that element. If the element doesn't exist, create a key and tally it. Translating this to JavaScript is a bit more difficult because the syntax is not how humans normally communicate. Take a look at how this problem can be solved using the `reduce` method.
+
+```javascript
+let input = ['a', 'b', 'c', 'd', 'c', 'c', 'a', 'b', 'd', 'b', 'c'];
+let output = input.reduce(function (tally, curr) {
+  if (tally[curr]) {
+    tally[curr] += 1;
+  } else {
+    tally[curr] = 1;
+  }
+
+  return tally;
+}, {});
+```
+
+Pretty clear, right? When I began working with the `reduce` method, I was perplexed by the arguments passed to the method and the structure of the callback function. What are `tally`, `curr` and `{}` in this? How do those three items relate? The initial value of `tally` is the second argument in the method, in this case an object literal, `{}`. With that in mind, we can start to interpret the callback function. This function runs on every element in the array, so it would make sense that `curr` is assigned the value of the current item. `tally` is an object with keys and values. The first line checks if `tally` has key with a defined value of `curr`, which will be `a`. If it exists, it adds one to the value at that key. If it doesn't exist, it creates the key with a value of 1, then moves on to the next item in the array. **It is important to note that the callback function must return the accumulated value.** Or else you're going to get errors as the funciton is called again with an unexpected value.
+
+Here is an item-by-item walkthrough.
+
+|   `i`   |           `tally`            | `curr` |       Returned `tally`       |
+| :-----: | :--------------------------: | :----: | :--------------------------: |
+| initial |             `{}`             |        |             `{}`             |
+|    0    |             `{}`             | `'a'`  |          `{ a: 1 }`          |
+|    1    |          `{ a: 1 }`          | `'b'`  |       `{ a: 1, b: 1 }`       |
+|    2    |       `{ a: 1, b: 1 }`       | `'c'`  |    `{ a: 1, b: 1, c: 1 }`    |
+|    3    |    `{ a: 1, b: 1, c: 1 }`    | `'d'`  | `{ a: 1, b: 1, c: 1, d: 1 }` |
+|    4    | `{ a: 1, b: 1, c: 1, d: 1 }` | `'c'`  | `{ a: 1, b: 1, c: 2, d: 1 }` |
+|    5    | `{ a: 1, b: 1, c: 2, d: 1 }` | `'c'`  | `{ a: 1, b: 1, c: 3, d: 1 }` |
+|    6    | `{ a: 1, b: 1, c: 3, d: 1 }` | `'a'`  | `{ a: 2, b: 1, c: 3, d: 1 }` |
+|    7    | `{ a: 2, b: 1, c: 3, d: 1 }` | `'b'`  | `{ a: 2, b: 2, c: 3, d: 1 }` |
+|    8    | `{ a: 2, b: 2, c: 3, d: 1 }` | `'d'`  | `{ a: 2, b: 2, c: 3, d: 2 }` |
+|    9    | `{ a: 2, b: 2, c: 3, d: 2 }` | `'b'`  | `{ a: 2, b: 3, c: 3, d: 2 }` |
+|   10    | `{ a: 2, b: 3, c: 3, d: 2 }` | `'c'`  | `{ a: 2, b: 3, c: 4, d: 2 }` |
+
+## Building `reducer`
+
+The callback function passed into the `reducer` method is invoked on every element within the array. So this is a perfect time to use iteration. As with the previous posts on Array Methods, we're going to build upon the `looper` function we already have. Here it is.
+
+```javascript
+let looper = function (array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    callback(array[i]);
+  }
+};
+```
+
+Let's get started!
+
+Looking back at the previous example of `Array.prototype.reduce`, we see that the call signature has two arguments: a callback and a starting value. Our `reducer` function will have three arguments: an array, a callback (`accumulator`) and a starting value (`startVal`).
+
+```javascript
+let reducer = function (array, accumulator, startVal) {
+  /* some logic */
+};
+```
+
+We know that we must iterate over the array and invoke the callback function on each item. We've seen this previously with the other array methods we recreated.
+
+```javascript
+let reducer = function (array, accumulator, startVal) {
+  looper(array, function (item) {
+    // accumulator(item)
+  });
+};
+```
+
+`looper` is used to go through each item in the array; `accumulator` must be invoked with each step. Where does `startVal` fit in to this function? Also note, the `reducer` function isn't returning anything at this point. What value should be returned? Looking back at the example and table, we see that the empty object, `{}`, is assigned to the variable `tally` and that `tally` is the returned value from the method call. Therefore, the `startVal` parameter should be the returned value from the `reducer` function. From the table, we also see that the starting value is reassigned a new value after each iteration. The `tally` variable changes with each step through the array. We can correctly assume that the `startVal` variable is assigned the result of invoking `accumulator` on the items.
+
+Let's update our function.
+
+```javascript
+let reducer = function (array, accumulator, startVal) {
+  looper(array, function (item) {
+    startVal = accumulator(startVal, item);
+  });
+
+  return startVal;
+};
+```
+
+**_Brief Aside_**: Here we are taking advantage of the callback function in `looper` having closure over the `startVal` variable. We are able to use and reassign the value of `startVal` because it is declared outside of the `looper` callback. When `startVal` is returned, it is the most recently updated value as a result of invoking the `accumulator`.
+
+## Optional Arguments
+
+The starting value for `reduce` is actually optional. If the final argument is omitted, then the first item in the array is set as the starting value and the accumulation begins on the second item. Here's a quick example of this in practice.
+
+```javascript
+let ans = [1, 2, 3, 4, 5].reduce(function (sum, current) {
+  sum += current;
+  return sum;
+});
+```
+
+Let's take a look at the values as the iteration progresses.
+
+|   `i`   |    `sum`    | `curr` | Returned `sum` |
+| :-----: | :---------: | :----: | :------------: |
+| initial | `undefined` |        |  `undefined`   |
+|    0    | `undefined` |  `1`   |      `1`       |
+|    1    |     `1`     |  `2`   |      `3`       |
+|    2    |     `3`     |  `3`   |      `6`       |
+|    3    |     `6`     |  `4`   |      `10`      |
+|    4    |    `10`     |  `5`   |      `15`      |
+
+When starting value is omitted, it is `undefined`. In the first step, `sum` is assigned the value of the `curr`ent item which is 1. In the next step, the `curr`ent value of 2 is added to `sum` and assigned making it 3. This is repeated until the end of the array.
+
+To prove this, let's give a starting value for this same example.
+
+```javascript
+let ans = [1, 2, 3, 4, 5].reduce(function (sum, current) {
+  sum += current;
+  return sum;
+}, 10);
+```
+
+Let's take a look at the values as the iteration progresses.
+
+|   `i`   | `sum` | `curr` | Returned `sum` |
+| :-----: | :---: | :----: | :------------: |
+| initial | `10`  |        |      `10`      |
+|    0    | `10`  |  `1`   |      `11`      |
+|    1    | `11`  |  `2`   |      `13`      |
+|    2    | `13`  |  `3`   |      `16`      |
+|    3    | `16`  |  `4`   |      `20`      |
+|    4    | `20`  |  `5`   |      `25`      |
+
+Here we can see how the inclusion of a starting value affects how `reduce` runs. This is a feature we should include in our `reducer` function. With a simple check if `startVal` is `undefined` we can duplicate this same behavior.
+
+```javascript
+let reducer = function (array, accumulator, startVal) {
+  looper(array, function (val) {
+    if (startVal === undefined) {
+      startVal = val;
+      return startVal;
+    }
+
+    startVal = accumulator(startVal, val);
+
+    return startVal;
+  });
+
+  return startVal;
+};
+```
+
+## Conclusion
+
+`Array.prototype.reduce` is a tough method to comprehend. There is a significant amount of nuance to how the method works under-the-hood and how it can be used. I showed you a couple ways to use `reduce` but the options are pretty limitless. I'll write a future post about use cases and how to craft the `accumulator` function, which can be the most difficult part when working with `reduce`. This is a great introduction to functional programming in JavaScript and a valuable tool to keep in your pocket. As always, if there is something I didn't explain completely or is wrong, [drop me a line](mailto:me@mikedoescoding.com).

@@ -1,0 +1,48 @@
+---
+date: 2016-03-13
+title: Number.toString Method
+---
+
+Recently, I learned a bit more about a native method on the Number object while solving a toy problem.
+
+For a given set of three options, `var options = [‘a’, ‘b’, ‘c’]`, list the three character strings that can be formed from these `options`.
+
+There are numerous ways to solve this problem and return the 27 (3^3) possible strings. Recursion could be used, starting with `options[0]` and making recursive calls until the output string is three characters in length. There is another method that leverages the `Number.prototype.toString` method. I’d recommend visiting [MDN.io](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString) to read the official documentation. I’ll give a brief explanation of the method.
+
+`Number.prototype.toString` takes a number object and converts it to a string.
+
+```javascript
+var num = 5;
+num.toString(); // ‘5’
+```
+
+There is an optional parameter that can be passed to the `toString` method called `radix`. The `radix` number is a value between 2 and 36 that serves as the base to which the number will be converted. When no `radix` number is passed, the value is defaulted to 10.
+
+A way to make sense of the `radix` number is to think of it as representing the total number of possible characters the value can be converted to. Again, the default `radix` number is 10, so values will be represented by the digits 0 - 9 and the general identity won’t change. A `radix` number of 2 converts the value into 0’s and 1’s. (It’s binary.)
+
+```javascript
+var num = 5;
+num.toString(2); // ‘101’
+```
+
+Getting back to the problem at hand. In our permutation problem there are a total of 27 strings built from the `options`. Ideally, we want a way to represent all the strings in a such a way that we can map the `options` onto string representation.
+Because there are three `options`, we can convert the numbers 0 - 26 to strings in `radix` (base) 3. This will represent the numbers as combinations of 0’s, 1’s and 2’s.
+
+```javascript
+var num = 26;
+num.toString(3); // ‘222’
+```
+
+Now, we can use the base 3 representation to map the `options` into a string.
+
+```javascript
+var options = [‘a’, ‘b’, ‘c’]
+var string26 = ‘222’;
+var solution = ‘’;
+for(var i = 0; i < string26.length; i++) {
+  solution += options[string26[i]];
+}
+console.log(solution); // ‘ccc’
+```
+
+Note: the values 0 - 8 when converted to strings in base 3 are represented with less than three values. `(8).toString(3); // ‘22’` We would need to check the length of the `toString` versions to ensure they are three characters long. If not, `’0’` can be concatenated on to the end so a solution string can accurately map the `options`.

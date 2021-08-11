@@ -1,0 +1,75 @@
+---
+date: 2017-10-17
+title: HTML5 Data Attributes
+---
+
+I was working on a project at work that required me to add custom properties to an icon. The goal was that when the icon is clicked, those properties are passed along to the server. To my chagrin, I ended up in a loop of trying to figure out why my camelCase attributes, `data-someName`, were being converted to lower-cased, `data-somename`. When switched to using hyphens, `data-some-name`, my attribute was converted to camelCase! After reading through the [MDN web doc](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes) on data attributes, I found the root of my problem and my solution. In this post, I'll cover how to set and access custom attributes in JavaScript. You can view a live example of the code in this post [here](https://codepen.io/mfrazier/full/ZXKpoG/).
+
+## Setting Custom Attributes
+
+When setting custom attributes, either directly in the HTML tag or using the `setAttribute` method, attribute names, following the requisite `data-`, that are hypen delimited, the name is converted to camelCase. Here are a few examples.
+
+#### Setting via HTML
+
+```html
+<icon
+  class="delete"
+  data-article-name="Interstella"
+  data-article-id="5555"
+  data-articleAuthor="Daft Punk"
+  onclick="handleDeleteClick(this)"
+>
+</icon>
+```
+
+#### Setting via JavaScript
+
+```javascript
+const iconEl = document.createElement('icon');
+
+iconEl.setAttribute('class', 'delete');
+iconEl.setAttribute('data-article-name', 'Interstella');
+iconEl.setAttribute('data-article-id', 5555);
+iconEl.setAttribute('data-articleAuthor', 'Daft Punk');
+iconEl.addEventListener('click', handleDeleteClick);
+```
+
+## Getting Custom Attributes
+
+We've seen how to set custom attributes. The next step is to access them within the `click` callback function. The goal is to use the click event to get the values from within the `dataset`. There are two different approaches to accessing the attributes through the click handler function. Those differences will be outlined below.
+
+```javascript
+// Setting click handler in HTML
+function handleDeleteClick(element) {
+  const articleId = element.getAttribute('data-article-id');
+  const articleName = element.getAttribute('data-article-name');
+  const articleauthor = element.getAttribute('data-articleAuthor');
+  // Equivalent
+  // const articleauthor = element.getAttribute('data-articleauthor');
+
+  // Do something with those values
+}
+```
+
+When working with event handlers in HTML, it is necessary to pass the element, `this`, to the callback function. This will allow us to access the attributes on the element. We use the `getAttribute` method on the element and pass in a string for the attribute we want. The string is the same as how we set it in the HTML.
+
+```javascript
+// Setting click handler via JavaScript
+function handleDeleteClick(event) {
+  const articleId = event.target.dataset.articleId;
+  const articleName = event.target.dataset.articleName;
+  const articleauthor = event.target.dataset.articleauthor;
+
+  // Do something with those values
+}
+```
+
+The event listener approach doesn't require the clicked element but instead the click event. The `event` contains a `target` which is the element that was clicked. The `target` is a collection of properties of the element. One of those properties is [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset). You can think of it as a JavaScript object. (It is actually a [DOMStringMap](https://developer.mozilla.org/en-US/docs/Web/API/DOMStringMap).) Properties within the `dataset` can be accessed through dot-notation (`dataset.propName`) or bracket-notation (`dataset['propName']`).
+
+This is where things got strange for me when I was working through the `dataset`. The attribute strings following `data-` had a peculiar behavoior of changing cases depending on how it was set. As it turns out, hyphen delimited attribute names are converted to camelCase. This is why `data-article-id` is accessed as `articleId` in the `dataset`. Whereas a camelCase attribute, `data-articleAuthor`, was converted to lowercase when accessed in the `dataset`.
+
+This is due to restrictions on custom attribute names. The attribute can only contain lowercase letters (`a`-`z`), numbers, hyphens (`-`), underscore (`_`), dot (`.`) and colon (`:`); it cannot contain uppercase letters (`A`-`Z`). Lowercase letters following hyphens in the attribute name are converted to uppercase and the hyphen removed, excluding the `data-`. The full explanation can be found [here](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset).
+
+## Final Thoughts
+
+Custom data attributes are a powerful way to give your HTML information to be consumed in your JavaScript. The examples used in this post are contrived and purposefully simplistic. In my project, the icons were generated for multiple rows of data, so I needed a method to capture all necessary information when the icon is clicked. I found this approach to be the most straightforward and I'm excited to continue using it. As always, if there is something I didn't explain completely or is wrong, [drop me a line](mailto:me@mikedoescoding.com).

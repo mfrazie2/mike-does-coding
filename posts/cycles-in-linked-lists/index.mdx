@@ -1,0 +1,43 @@
+---
+date: 2016-03-14
+title: Cycles in Linked Lists
+---
+
+In a recent whiteboarding practice session, my partner asked me to write a function that determines if a singly-linked list contains a cycle. Each node in the list has a `data` property holding a number and a `next` property that references the following node in the list. All of the `data` values will be unique numbers.
+
+In a linear linked list, the `next` properties continue to point to the next node until the final node, which references `undefined` as its `next` value. In a cycle, the `next` property points back to a previous node in the list, anywhere in the list. So, how can we determine if a cycle exists in our list?
+
+To start off this problem, my partner and I discussed the major differences between a linear linked list and list with a cycle. We drew a diagram to represent the two types. To further clarify the expected output, I proposed a function that traverses a list and logs the `data` value. For a linear list, we would expect non-repeating values. In a cycle, we would expect something like `8 9 7 6 5 7 6 5 7 6 5 7 6 5 ...`.
+
+In a cycle, the `next` property will always be truthy because the nodes point in a circle. At some point while traversing the list, the same `data` value will be encountered. Because all `data` values are unique, once a non-unique value is encountered the existence of a cycle is confirmed. The second `7` is the start of the cycle. To keep track of the unique values, we could use a hash table or JavaScript object. There is a chance that the provided head node will be in a linear list, so we need to make sure that we take that into consideration. If `node.next` is falsy, then we know the list does not contain a cycle.
+
+Let's take a look at some pseudocode.
+
+```javascript
+// declare function that takes in a head node of a linked list
+// create a storage hash table to hold unique data values
+// iterate over the linked list while node.next exists
+// if node.data exists
+// return true
+// add node.data to storage table
+// set node to node.next
+// traversal complete, return false
+```
+
+Transformed into code:
+
+```javascript
+function containsCycle(node) {
+  var uniqueVals = {};
+  while (node.next) {
+    if (uniqueVals[node.data]) {
+      return true;
+    }
+    uniqueVals[node.data] = true;
+    node = node.next;
+  }
+  return false;
+}
+```
+
+This was a challenging problem at the start because I did not have a solid mental model of a cycle in a linked list. After working through diagrams and expected outputs for a linear versus cycle list, I was better able to approach the problem.

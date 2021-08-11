@@ -1,0 +1,143 @@
+---
+date: 2017-08-20
+title: Array Methods - Filter
+---
+
+If you have worked with a large dataset filled with some items you need and other you don't, you've probably needed to use a filter of some kind. A filter allows you to test each item and save only the items that pass the test. JavaScript arrays have a native method, [`Array.prototype.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter), that can be used in such instances. In this post, we'll explore how we can emulate the native `filter` method using the [`looper`](http://www.mikedoescoding.com/Array-Methods-ForEach/) function previously created.
+
+If you haven't read the post on Array Methods - ForEach, I encourage you to read that before continuing.
+
+## Looper
+
+As a refresher, here is the `looper` function we'll build upon to create a `filter` function.
+
+```javascript
+let looper = function (array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    callback(array[i]);
+  }
+};
+```
+
+## Native Filter
+
+The native `filter` method is similar to the native `map` method on arrays. The method acts upon the array that calls it and returns a new array with the values that pass the predicate function. Let's look at an example before creating our own.
+
+```javascript
+let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+function isOdd(num) {
+  return num % 2 > 0;
+}
+
+let results = arr.filter(isOdd);
+console.log(results); // [1,3,5,7,9]
+```
+
+Important to note: if there are no values that pass the predicate function, then an empty array is returned.
+
+```javascript
+let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+function isZero(num) {
+  return num === 0;
+}
+
+let results = arr.filter(isZero);
+console.log(results); // []
+```
+
+Also important to note: the predicate function, `isOdd` and `isZero`, returns a `boolean` value. If the value returned is `true`, we keep the item in the array, otherwise, we skip it and move on.
+
+## Creating a Filter
+
+Now that we have an understanding of how the native `filter` method operates, we are ready to create our own. One thing I like to do when working with new concepts is to identify patterns. The use cases of `Array.prototype.filter` and `Array.prototype.map` look very similiar. Both take a function as an argument and return a new array with the values from that function. Let's look at the [`mapper`](http://www.mikedoescoding.com/Array-Methods-Map/) function previously create for clues about how to implement `filter`.
+
+```javascript
+function mapper(array, callback) {
+  let results = [];
+  looper(array, function (item) {
+    let value = callback(item);
+    results.push(value);
+  });
+  return results;
+}
+```
+
+The call signatures of our `filter` and `mapper` will likely be the same. Both functions return an array, so we can keep the `results = []` line. It is the logic inside `looper` that will be different.
+
+```javascript
+let filter = function (array, predicate) {
+  let results = [];
+  looper(array /* ? */);
+  return results;
+};
+```
+
+Remember that the function passed to `looper` runs on every single element of the array. Therefore, we need to figure out how we can invoke the `predicate` function inside of `looper` and only save the values that pass. Look again at the `mapper` function above. Our solution will be very similar. Let's create some pseudo-code to have a plan.
+
+```javascript
+// ...
+looper(array, function (item) {
+  // invoke predicate function with item
+  // if predicate is true
+  // add item to results array
+  // else do nothing
+});
+// ...
+```
+
+This should give us a good idea of what the `callback` should do in the `looper`. Let's make real code.
+
+```javascript
+let filter = function (array, predicate) {
+  let results = [];
+  looper(array, function (item) {
+    if (predicate(item)) {
+      results.push(item);
+    }
+  });
+  return results;
+};
+```
+
+That's it! We can now filter an array on any sort of property we want. Just like we did for `map`, let's look at how `filter` builds up the results array.
+
+## Filter in Action
+
+We will use the `isOdd` example from above. Here is how we might call `filter`.
+
+```javascript
+let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+function isOdd(num) {
+  return num % 2 > 0;
+}
+
+let results = filter(arr, isOdd);
+console.log(results); // [1,3,5,7,9]
+```
+
+Here are some key values while iterating over the array.
+
+|   `i`   | `array[i]` | `isOdd(item)` |  `results`  |
+| :-----: | :--------: | :-----------: | :---------: |
+| initial |            |               |     []      |
+|    0    |     1      |     true      |     [1]     |
+|    1    |     2      |     false     |     [1]     |
+|    2    |     3      |     true      |    [1,3]    |
+|    3    |     4      |     false     |    [1,3]    |
+|    4    |     5      |     true      |   [1,3,5]   |
+|    5    |     6      |     false     |   [1,3,5]   |
+|    6    |     7      |     true      |  [1,3,5,7]  |
+|    7    |     8      |     false     |  [1,3,5,7]  |
+|    8    |     9      |     true      | [1,3,5,7,9] |
+|    9    |     10     |     false     | [1,3,5,7,9] |
+
+We can see that as the array is iterated over and each value is passed the `predicate` function (`isOdd`), only the values that pass as true are put into the results array.
+
+## Final Thoughts
+
+The native `filter` method is a very helpful tool when working with large datasets or datasets you otherwise need pared down fo ease of use. Knowing how the `predicate` function is used behind the scenes will help you to write your own and to debug the problem when things are not working as you expect.
+
+If you made it this far and are ready for more, you'll appreciate the next post on `Array.prototype.reduce`. This was definitely the most difficult one for me to grasp and I'm looking forward to sharing how I learned to love to `reduce`. Any questions, comments or errors, please [drop me a line](mailto:me@mikedoescoding.com)!
