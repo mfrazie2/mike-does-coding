@@ -28,8 +28,8 @@ const BlogPage = ({ data }) => {
       <ContentWrapper>
         {posts.map(post => {
           return (
-            <BlogEntry>
-              <Link to={`${post.slug}/`} key={post.id}>
+            <BlogEntry key={post.id}>
+              <Link to={`${post.slug}/`}>
                 <h2>{post.frontmatter.title}</h2>
               </Link>
               <BlogSubtitle>
