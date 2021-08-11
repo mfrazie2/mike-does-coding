@@ -2,6 +2,7 @@ import React from 'react';
 import Logo from './Logo';
 import Nav from './Nav';
 import styled from 'styled-components';
+import ContentWrapper from './ContentWrapper';
 
 // #region
 const StyledHeader = styled.header`
@@ -26,10 +27,12 @@ const HeaderInner = styled.div`
 const Header = () => {
   return (
     <StyledHeader>
-      <HeaderInner>
-        <Logo />
-        <Nav />
-      </HeaderInner>
+      <ContentWrapper>
+        <HeaderInner>
+          <Logo />
+          <Nav />
+        </HeaderInner>
+      </ContentWrapper>
     </StyledHeader>
   );
 };

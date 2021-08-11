@@ -1,8 +1,8 @@
 import React from 'react';
 import SeoComponent from '../components/seoComponent';
 import { StaticImage } from 'gatsby-plugin-image';
+import ContentWrapper from '../components/ContentWrapper';
 
-// markup
 const IndexPage = () => {
   return (
     <>
@@ -13,8 +13,10 @@ const IndexPage = () => {
         layout="fullWidth"
         aspectRatio={21 / 9}
       />
-      <h1>Welcome to my portfolio</h1>
-      <p>I want this to be like the original Space Jam website.</p>
+      <ContentWrapper>
+        <h1>Welcome to my portfolio</h1>
+        <p>I want this to be like the original Space Jam website.</p>
+      </ContentWrapper>
     </>
   );
 };

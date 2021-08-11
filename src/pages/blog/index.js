@@ -2,6 +2,7 @@ import React from 'react';
 import SeoComponent from '../../components/seoComponent';
 import { graphql, Link } from 'gatsby';
 import renderTimeToRead from '../../utils/renderTimeToRead';
+import ContentWrapper from '../../components/ContentWrapper';
 
 // markup
 const BlogPage = ({ data }) => {
@@ -10,15 +11,19 @@ const BlogPage = ({ data }) => {
   return (
     <>
       <SeoComponent title={`Blog`} />
-      {posts.map(post => {
-        return (
-          <Link to={post.slug} key={post.id}>
-            <h2>{post.frontmatter.title}</h2>
-            <p>{post.frontmatter.date}</p>
-            <p>{renderTimeToRead(post.timeToRead)}</p>
-          </Link>
-        );
-      })}
+      <ContentWrapper>
+        {posts.map(post => {
+          return (
+            <div>
+              <Link to={`${post.slug}/`} key={post.id}>
+                <h2>{post.frontmatter.title}</h2>
+              </Link>
+              <p>{post.frontmatter.date}</p>
+              <p>{renderTimeToRead(post.timeToRead)}</p>
+            </div>
+          );
+        })}
+      </ContentWrapper>
     </>
   );
 };

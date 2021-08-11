@@ -4,6 +4,7 @@ import { MDXRenderer } from 'gatsby-plugin-mdx';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import { defineCustomElements as deckDeckGoHighlightElement } from '@deckdeckgo/highlight-code/dist/loader';
 import SeoComponent from '../../components/seoComponent';
+import ContentWrapper from '../../components/ContentWrapper';
 
 deckDeckGoHighlightElement();
 
@@ -14,14 +15,16 @@ const BlogPostPage = ({ data }) => {
   return (
     <>
       <SeoComponent title={post.frontmatter.title} />
-      <article>
-        {image ? (
-          <GatsbyImage image={image} alt={post.frontmatter.imageAlt} />
-        ) : null}
-        <h1>{post.frontmatter.title}</h1>
-        <p>{post.frontmatter.date}</p>
-        <MDXRenderer>{post.body}</MDXRenderer>
-      </article>
+      <ContentWrapper>
+        <article>
+          {image ? (
+            <GatsbyImage image={image} alt={post.frontmatter.imageAlt} />
+          ) : null}
+          <h1>{post.frontmatter.title}</h1>
+          <p>{post.frontmatter.date}</p>
+          <MDXRenderer>{post.body}</MDXRenderer>
+        </article>
+      </ContentWrapper>
     </>
   );
 };
