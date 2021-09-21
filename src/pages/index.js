@@ -8,8 +8,8 @@ const IndexPage = () => {
     <>
       <SeoComponent title={`Home`} />
       <StaticImage
-        src="https://lh3.googleusercontent.com/pw/AM-JKLX72lJj-vodUgH4IEMAwa3l4P_vlW11Bp3HF6t9JnnSVSXOnEgjZjWcK1oU2qopPpgs0ADZzU-q6foIii85H2fTNviICoGAEtNFfic1qDSn8Fa8PHAHy3Hh052U8vZPstIfZioavFqqxD-VnltKv8MT=w2078-h1560-no"
-        alt="Winter in the mountains"
+        src="../images/hero.png"
+        alt="Mike's drawing of the pale blue dot overlayed with hexagons"
         layout="fullWidth"
         aspectRatio={21 / 9}
       />
