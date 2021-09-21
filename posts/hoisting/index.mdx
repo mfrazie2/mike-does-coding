@@ -21,7 +21,7 @@ Before reading the rest of this post, take some time to hypothesize what you exp
 
 ---
 
-I hope the message logged to the console was surprising. When I first saw this prompt, I predicted that `"not bar"` would be logged twice. The variable `foo` is local to the `baz` function and that value would be logged. I knew enough about [scope](http://www.mikedoescoding.com/JavaScript-Scope/) to know the global `foo` would not interfere. I was confounded by seeing `undefined` first! With some slight guidance, I stumbled into the realm of _hoisting_ in JavaScript. In this post, I'll discuss variable hoisting in ES5 and how ES2015 can prevent the above behavior.
+I hope the message logged to the console was surprising. When I first saw this prompt, I predicted that `"not bar"` would be logged twice. The variable `foo` is local to the `baz` function and that value would be logged. I knew enough about [scope](/blog/javascript-scope/) to know the global `foo` would not interfere. I was confounded by seeing `undefined` first! With some slight guidance, I stumbled into the realm of _hoisting_ in JavaScript. In this post, I'll discuss variable hoisting in ES5 and how ES2015 can prevent the above behavior.
 
 ###Hoisting in ES5
 
