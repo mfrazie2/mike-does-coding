@@ -48,7 +48,7 @@ const Footer = () => {
               <FaGithubSquare aria-label="Github link" size="2em" />
             </LinkIconWrapper>
             <LinkIconWrapper
-              href="https://www.linkedin.com/in/michaelsfrazier"
+              href="https://www.linkedin.com/in/mikesfrazier"
               target="_blank"
               referrerPolicy="no-referrer"
               rel="noreferrer">
