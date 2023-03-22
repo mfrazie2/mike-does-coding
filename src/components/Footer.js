@@ -1,11 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  FaEnvelope,
-  FaGithubSquare,
-  FaLinkedin,
-  FaTwitterSquare,
-} from 'react-icons/fa';
+import { FaEnvelope, FaGithubSquare, FaLinkedin } from 'react-icons/fa';
 import ContentWrapper from './ContentWrapper';
 
 //#region
@@ -53,13 +48,6 @@ const Footer = () => {
               referrerPolicy="no-referrer"
               rel="noreferrer">
               <FaLinkedin aria-label="LinkedIn link" size="2em" />
-            </LinkIconWrapper>
-            <LinkIconWrapper
-              href="https://www.twitter.com/AFrazGuy"
-              target="_blank"
-              referrerPolicy="no-referrer"
-              rel="noreferrer">
-              <FaTwitterSquare aria-label="Twitter link" size="2em" />
             </LinkIconWrapper>
           </div>
         </FooterInner>

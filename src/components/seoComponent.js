@@ -10,7 +10,6 @@ const SeoComponent = ({ title, description, meta = [] }) => {
         siteMetadata {
           description
           title
-          twitter
         }
       }
     }
@@ -40,22 +39,22 @@ const SeoComponent = ({ title, description, meta = [] }) => {
           property: `og:type`,
           content: `website`,
         },
-        {
-          property: `twitter:title`,
-          content: title,
-        },
-        {
-          property: `twitter:creator`,
-          content: `AFrazGuy`,
-        },
-        {
-          property: `twitter:description`,
-          content: metaDescription,
-        },
-        {
-          property: `twitter:card`,
-          content: `summary`,
-        },
+        // {
+        //   property: `twitter:title`,
+        //   content: title,
+        // },
+        // {
+        //   property: `twitter:creator`,
+        //   content: `AFrazGuy`,
+        // },
+        // {
+        //   property: `twitter:description`,
+        //   content: metaDescription,
+        // },
+        // {
+        //   property: `twitter:card`,
+        //   content: `summary`,
+        // },
       ].concat(meta)}
       link={[{ rel: 'shortcut icon', type: 'image/png', href: `${favicon}` }]}
     />
