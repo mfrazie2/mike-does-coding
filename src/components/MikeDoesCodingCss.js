@@ -13,7 +13,7 @@ const MikeDoesCodingCss = createGlobalStyle`
     h1 {
         font-size: 36px;
     }
-    h1 a {
+    h1 a, h2 a {
         color: inherit;
     }
 

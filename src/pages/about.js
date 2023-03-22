@@ -32,21 +32,28 @@ const AboutPage = () => {
             I currently work at{' '}
             {
               <CustomLink
-                linkSrc="https://www.quizlet.com"
-                linkText="Quizlet"
+                linkSrc="https://www.evernow.com"
+                linkText="Evernow"
               />
             }{' '}
-            as a software engineer building UIs with React and Typescript with a
-            Hacklang backend. I’m a co-organizer for the{' '}
+            as a software engineer building UIs with React and Typescript. I’m a
+            co-organizer for the{' '}
             {
               <CustomLink
                 linkSrc="https://www.meetup.com/denverscript/"
                 linkText="DenverScript"
               />
             }{' '}
-            meetup group. Formerly, I was a scientist and educator. I enjoy
-            discovering new features, libraries, hacks and more in web
-            development and blogging about them. I want to share what I learn.
+            meetup group. I previously worked at{' '}
+            {
+              <CustomLink
+                linkSrc="https://www.quizlet.com"
+                linkText="Quizlet"
+              />
+            }
+            . Formerly, I was a scientist and educator. I enjoy discovering new
+            features, libraries, hacks and more in web development and blogging
+            about them. I want to share what I learn.
           </p>
         </AboutInner>
       </ContentWrapper>
