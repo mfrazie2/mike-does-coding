@@ -1,0 +1,159 @@
+---
+date: 2023-04-19
+title: Finding Objects in Arrays
+---
+
+Arrays in JavaScript are great for holding list-like data, accepting anything from primitives to complex types (or a mix thereof). When the time comes to find the piece of data you need, there are myriad ways to accomplish the task. Determining which method to use can turn into a problem on its own, requiring dives into the documentation and making comparisons. Fortunately, I have run into this issue so many times I prepared a lightning talk on the topic and presented it a couple of times. Here is a rough translation of talk-to-text. Let's dive into the array methods we can use to find an item in an array.
+
+# Finding Objects in Arrays
+
+## Context and Example Limitations
+
+First, I want to set some context. Like any good tutorial, the examples we are going to use are contrived and fairly straightforward. We will use arrays with simple objects of key-value pairs: no additional nesting or complex types. We will be parsing the objects for a specific key. We will also briefly touch on how each method handles [**sparse arrays**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#sparse_arrays), or arrays with no assigned values at an index (`[1, 2, , 4, , 6]`).
+
+Second, the methods we are going to cover are listed below. At the time of writing, these felt like the ones we'd most likely encounter in our day-to-day tasks. The specification for JavaScript changes each year and this list could become outdated. Always refer to the documentation.
+
+- `indexOf`
+- `lastIndexOf`
+- `findIndex`
+- `findLastIndex`
+- `some`
+- `find`
+- `findLast`
+- `includes`
+
+Third, we could also choose to use `lodash` or not use these methods and rely on a `for` loop. I won't cover these options because the array methods will work for what we need and many of the `lodash` functions are being added as native methods.
+
+Now that we got that out of the way, let's look at how we can find the index of our object-of-interest.
+
+### Finding The Index
+
+Prior to the ES6 specification, the only methods to find the index of an item in the array were `Array.prototype.indexOf` and `Array.prototype.lastIndexOf` (OR WAS THIS IN ES2015 TOO?). In ES6+, the `Array.prototype.findIndex` and `Array.prototype.findLastIndex` methods were introduced. The differences between these methods are nuanced and could lead to headaches.
+
+### `indexOf`/`lastIndexOf`
+
+The call signature for [`indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf) and [`lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf) require a single `searchValue` argument (and an optional `fromIndex`). If the `searchValue` is in the array, the index value is returned; if the value is not in the array, a value of `-1` is returned. Behind the scenes, the methods are performing a strict equality check ([`===`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality)) on the values in the array versus the `searchValue`. If we are searching for a primitive value, such as a string or number, this will work great. If we are trying to find a complex value, such as `arr.indexOf({ id: 2 })`, this will not work because the item in the array is not the same as argument value.
+
+The difference between `indexOf` and `lastIndexOf` is the direction of iteration. `indexOf` begins at index 0 and increases in value. `lastIndexOf` begins at the last index and decreases in value. Each returns the first index found in the respective iteration direction.
+
+> If you find yourself ever looking for `NaN` in an array, `indexOf` and `lastIndexOf` will always return `-1` because `NaN` values are never compared as equal.
+
+```javascript
+let arr = [1, 2, 3, 4, 5, 3, 6];
+
+let foundIdx = arr.indexOf(3); // 2
+
+let lastFoundIdx = arr.lastIndexOf(3); // 5
+
+let idxNotFound = arr.indexOf(7); // -1
+
+let arr2 = [{ id: 1 }, { id: 2 }, { id: 3 }];
+
+let willNotWork = arr2.indexOf({ id: 2 }); // -1
+```
+
+#### `findIndex`/`findLastIndex`
+
+In order to find the index of a complex value in an array we have to use [`Array.prototype.findIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex) or [`Array.prototype.findLastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLastIndex). The call signature of this method is a required comparator function. This method is a higher-order function (like `map` or `filter`). The function will execute on every item in the array until the item is found or the end of the list is reached. If the item passes the comparator (returns `true`), the index will be returned. If no items pass the comparator, a value of `-1` is returned. If there are two or more values that pass the comparator function, only the first index will be returned.
+
+The difference between `findIndex` and `findLastIndex` is the direction of iteration. `findIndex` begins at index 0 and increases in value. `findLastIndex` begins at the last index and decreases in value. Each returns the first index found in the respective iteration direction.
+
+> If you find yourself ever looking for `NaN` in an array, `findIndex` and `findLastIndex` will require the comparator to explicitly check for it.
+
+One thing to note and this is complicated to explain. The `findIndex` and `findLastIndex` methods will visit every single index within an array, even sparse arrays. We can imagine an array of length 100 with a non-value somewhere near the middle. Calling `arr.findIndex(x => x === undefined)` will iterate until the non-value is found and treated as `undefined`. This could be useful when trying to find the first "open" space in an array to insert a new value. (Think trying to minimize space complexity.)
+
+```javascript
+let arr = [
+  { id: 1, color: 'red' },
+  { id: 2, color: 'blue' },
+  { id: 3, color: 'green' },
+  { id: 4, color: 'blue' },
+];
+
+let foundIdx = arr.findIndex(item => item.color === 'blue'); // 1
+let lastBlueIdx = arr.findLastIndex(item => item.color === 'blue'); // 3
+
+let notFoundIdx = arr.findIndex(item => item.id === 4); // -1
+
+let arr2 = ['hearts', 'stars', 'horseshoes', 'clovers'];
+
+let starsIdx = arr2.findIndex(item => item === 'stars'); // 1
+```
+
+In my experience, I only ever need the index of a value in an array when I need to remove it from the array with some [`slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)-ing. What would we do if we want to find the item in order to make updates to it?
+
+### Finding and Retrieving the Item
+
+There are two methods on an array to search for and return the item. [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) and [`Array.prototype.findLast`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLast) were introduced in the ES6+ specification. Each method takes a comparator function, similar to `findIndex`, and returns the first item that returns `true` from the function. If no items pass the comparator function, the return value is `undefined`.
+
+The difference between `find` and `findLast` is the direction of iteration. `find` begins at index 0 and increases in value. `findLast` begins at the last index and decreases in value. Each returns the first item found in the respective iteration direction.
+
+> If you find yourself ever looking for `NaN` in an array, `find`/`findLast` will require the comparator to explicitly check for it.
+
+```javascript
+let arr = [
+  { id: 1, color: 'red' },
+  { id: 2, color: 'blue' },
+  { id: 3, color: 'green' },
+  { id: 4, color: 'blue' },
+];
+
+let foundItem = arr.find(item => item.color === 'blue');
+// { id: 2, color: 'blue' }
+let foundLastBlueItem = arr.findLast(item => item.color === 'blue');
+// { id: 4, color: 'blue' }
+
+let notFoundItem = arr.find(item => item.id === 5); // undefined
+
+let arr2 = ['hearts', 'stars', 'horseshoes', 'clovers'];
+
+let starsItem = arr2.find(item => item === 'stars'); // 'stars'
+```
+
+We can now find a reference to the item itself. This is super helpful if we need to make modifications to the item or pass it as an argument to another function. Now, what if we don't need the item itself and just care that it exists in order to move on to the next part of the script?
+
+### Determining the Item Exists
+
+Prior to the ES6 specification, the [`Array.prototype.some`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some) method could be used to return a boolean value for the existence of an item in an array. In ES6+, the [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes) method was introduced. The difference between the methods comes down to what type of value you are searching for: simple/primitive or complex.
+
+#### `some`
+
+The `some` method is a higher-order function and takes a comparator function. The function will be executed on every item until a `true` value is returned. Once `true` is returned, none of the remaining indices will be checked. If every item fails the comparator function, the return value is `false`.
+
+```javascript
+let arr = [
+  { id: 1, color: 'red' },
+  { id: 2, color: 'blue' },
+  { id: 3, color: 'green' },
+];
+
+let foundItem = arr.some(item => item.color === 'red'); // true
+
+let notFoundItem = arr.some(item => item.id === 4); // false
+
+let arr2 = ['hearts', 'stars', 'horseshoes', 'clovers'];
+
+let starsItem = arr2.some(item => item === 'stars'); // true
+```
+
+#### `includes`
+
+Unlike `some`, this method only works with primitive values, akin to `indexOf`. The `includes` method uses the [`SameValueZero`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#same-value-zero_equality) algorithm to compare values. This is kind of like the strict equality (`===`) operator with some extra specifications. Unlike some of the other methods covered, `includes` will correctly find `NaN` in the array.
+
+```javascript
+let arr = [1, 2, 3, 4, 5, 3, 6, NaN];
+
+let found = arr.includes(3); // true
+
+let notFound = arr.includes(7); // false
+
+let nanFound = arr.includes(NaN); // true
+
+let arr2 = [{ id: 1 }, { id: 2 }, { id: 3 }];
+
+let willNotWork = arr2.includes({ id: 2 }); // false
+```
+
+## Final Thoughts
+
+With so many different ways of searching an array, it should be clear that the reason for searching is key as well as the type of values in the array. If you want the index of an item, `findIndex` is likely your best bet even when searching a primitives array. If you want the item itself, `find` should be the tool you reach for. If you want to know if the item exists in the array, the `some` method will work regardless of the value types. Any questions, comments or errors, please [drop me a line](mailto:me@mikedoescoding.com)!
