@@ -1,5 +1,5 @@
 ---
-date: DATE
+date: YYYY-MM-DD
 title: TITLE
 ---
 
