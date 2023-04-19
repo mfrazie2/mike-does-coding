@@ -40,6 +40,29 @@ const MikeDoesCodingCss = createGlobalStyle`
         margin: 15px 0;
     }
 
+    code {
+        font-family: monospace;
+    }
+
+    blockquote {
+        border-left: solid 4px gray;
+        font-style: italic;
+        padding-left: 16px;
+    }
+
+    ol, ul {
+        font-family: Roboto;
+        font-size: 18px;
+        line-height: 1.7;
+        list-style: inside;
+        list-style-type: unset;
+        padding-left: 16px;
+    }
+
+    strong {
+        font-weight: bold;
+    }
+
     deckgo-highlight-code {
         --deckgo-highlight-code-font-size: 18px;
         --deckgo-highlight-code-token-comment: rgb(150,150,150);
