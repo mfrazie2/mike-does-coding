@@ -3,7 +3,7 @@ date: 2017-08-20
 title: Array Methods - Filter
 ---
 
-If you have worked with a large dataset filled with some items you need and other you don't, you've probably needed to use a filter of some kind. A filter allows you to test each item and save only the items that pass the test. JavaScript arrays have a native method, [`Array.prototype.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter), that can be used in such instances. In this post, we'll explore how we can emulate the native `filter` method using the [`looper`](http://www.mikedoescoding.com/Array-Methods-ForEach/) function previously created.
+If you have worked with a large dataset filled with some items you need and other you don't, you've probably needed to use a filter of some kind. A filter allows you to test each item and save only the items that pass the test. JavaScript arrays have a native method, [`Array.prototype.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter), that can be used in such instances. In this post, we'll explore how we can emulate the native `filter` method using the [`looper`](/blog/array-methods-foreach/) function previously created.
 
 If you haven't read the post on Array Methods - ForEach, I encourage you to read that before continuing.
 
@@ -51,7 +51,7 @@ Also important to note: the predicate function, `isOdd` and `isZero`, returns a 
 
 ## Creating a Filter
 
-Now that we have an understanding of how the native `filter` method operates, we are ready to create our own. One thing I like to do when working with new concepts is to identify patterns. The use cases of `Array.prototype.filter` and `Array.prototype.map` look very similiar. Both take a function as an argument and return a new array with the values from that function. Let's look at the [`mapper`](http://www.mikedoescoding.com/Array-Methods-Map/) function previously create for clues about how to implement `filter`.
+Now that we have an understanding of how the native `filter` method operates, we are ready to create our own. One thing I like to do when working with new concepts is to identify patterns. The use cases of `Array.prototype.filter` and `Array.prototype.map` look very similiar. Both take a function as an argument and return a new array with the values from that function. Let's look at the [`mapper`](/blog/array-methods-map/) function previously create for clues about how to implement `filter`.
 
 ```javascript
 function mapper(array, callback) {

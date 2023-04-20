@@ -3,7 +3,7 @@ date: 2017-08-01
 title: Array Methods - Map
 ---
 
-When considering the most versatile and extensible Array methods, I would argue that `map` and `reduce` are at the top of that list. In this post, I'll discuss how to create your version of the native `map` method utilizing a previous native method we already made in a previous [post](http://www.mikedoescoding.com/Array-Methods-ForEach/). The `Array.prototype.map` method allows you to iterate over an array of items, perform an operation on each item and return an array back of the results of the operation. To give you an idea, we want to emulate the following.
+When considering the most versatile and extensible Array methods, I would argue that `map` and `reduce` are at the top of that list. In this post, I'll discuss how to create your version of the native `map` method utilizing a previous native method we already made in a previous [post](/blog/array-methods-foreach/). The `Array.prototype.map` method allows you to iterate over an array of items, perform an operation on each item and return an array back of the results of the operation. To give you an idea, we want to emulate the following.
 
 ```javascript
 [1, 2, 3, 4, 5].map(num => num * num); // [1,4,9,16,25]
@@ -13,7 +13,7 @@ Take a moment to think about how we might go about this and what might be going 
 
 ## Recall `looper`
 
-In a previous post about the `forEach` method, we created a function called `looper`, which took an array and a function as arguments. Below is the implementation. (If this is at all unfamiliar, please be sure to check out my post on [Array Methods - ForEach](http://www.mikedoescoding.com/Array-Methods-ForEach/) before proceeding.)
+In a previous post about the `forEach` method, we created a function called `looper`, which took an array and a function as arguments. Below is the implementation. (If this is at all unfamiliar, please be sure to check out my post on [Array Methods - ForEach](/blog/array-methods-foreach/) before proceeding.)
 
 ```javascript
 function looper(array, callback) {

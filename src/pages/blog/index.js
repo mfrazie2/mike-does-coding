@@ -12,6 +12,10 @@ const BlogEntry = styled.div`
   }
 `;
 
+const BlogTitle = styled.h2`
+  color: #173670;
+`;
+
 const BlogSubtitle = styled.div`
   display: flex;
   gap: 2rem;
@@ -30,7 +34,7 @@ const BlogPage = ({ data }) => {
           return (
             <BlogEntry key={post.id}>
               <Link to={`${post.slug}/`}>
-                <h2>{post.frontmatter.title}</h2>
+                <BlogTitle>{post.frontmatter.title}</BlogTitle>
               </Link>
               <BlogSubtitle>
                 <p>{post.frontmatter.date}</p>

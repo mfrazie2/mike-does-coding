@@ -3,7 +3,7 @@ date: 2016-11-20
 title: Classing in ES2015
 ---
 
-In a previous [post](http://www.mikedoescoding.com/Classing-in-ES5/), I explained how classes can be made using ES5 syntax. In ES5, constructor functions are used to create class-like objects. When creating a subclass, it is necessary to set up the inheritance chain and set the correct `constructor` property. In ES2015, the `class` keyword is used to create classes and the `extends` keyword is used to create subclasses. Using the same examples of a `Car` and `Van` from the previous post, the classes will be refactored to use ES2015 syntax.
+In a previous [post](/blog/classing-in-es5/), I explained how classes can be made using ES5 syntax. In ES5, constructor functions are used to create class-like objects. When creating a subclass, it is necessary to set up the inheritance chain and set the correct `constructor` property. In ES2015, the `class` keyword is used to create classes and the `extends` keyword is used to create subclasses. Using the same examples of a `Car` and `Van` from the previous post, the classes will be refactored to use ES2015 syntax.
 
 The ES2015 update introduced a new keyword for creating classes, `class`. The syntax is 'sugar' over the existing prototype-based inheritance. The `class` keyword is not a new object-oriented inheritance paradigm. The new syntax for creating a class may look foreign the first time, but I have found the syntax more readable and understandable. The following is a basic example of building a class with a single method.
 
@@ -23,7 +23,7 @@ ourClass.printClassName();
 // 'This is our awesome class name: JavaScriptonites!'
 ```
 
-The `AwesomeClass` syntax is a departure from the typical ES5 class construction. (Check out the previous [post](http://www.mikedoescoding.com/Classing-in-ES5/).) Take note of a few things here.
+The `AwesomeClass` syntax is a departure from the typical ES5 class construction. (Check out the previous [post](/blog/classing-in-es5/).) Take note of a few things here.
 
 - We still use the keyword `new` to create an instance.
 - Methods are placed directly in the class definition and use the shorthand syntax.

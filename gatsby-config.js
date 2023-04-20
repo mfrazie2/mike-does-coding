@@ -2,7 +2,6 @@ module.exports = {
   siteMetadata: {
     title: `Mike Does Coding`,
     description: `My personal blog`,
-    twitter: `AFrazGuy`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -48,20 +47,17 @@ module.exports = {
       options: {
         path: `${__dirname}/posts`,
         name: `posts`,
-      }
+      },
     },
     `gatsby-transformer-sharp`,
     `gatsby-remark-images`,
     {
       resolve: `gatsby-plugin-google-fonts`,
       options: {
-        fonts: [
-          `big shoulders text`,
-          `roboto`
-        ],
-        display: 'swap'
-      }
+        fonts: [`big shoulders text`, `roboto`],
+        display: 'swap',
+      },
     },
-    `gatsby-plugin-styled-components`
+    `gatsby-plugin-styled-components`,
   ],
 };

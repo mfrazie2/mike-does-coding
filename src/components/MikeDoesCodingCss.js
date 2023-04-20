@@ -13,7 +13,7 @@ const MikeDoesCodingCss = createGlobalStyle`
     h1 {
         font-size: 36px;
     }
-    h1 a {
+    h1 a, h2 a {
         color: inherit;
     }
 
@@ -38,6 +38,29 @@ const MikeDoesCodingCss = createGlobalStyle`
 
     p {
         margin: 15px 0;
+    }
+
+    code {
+        font-family: monospace;
+    }
+
+    blockquote {
+        border-left: solid 4px gray;
+        font-style: italic;
+        padding-left: 16px;
+    }
+
+    ol, ul {
+        font-family: Roboto;
+        font-size: 18px;
+        line-height: 1.7;
+        list-style: inside;
+        list-style-type: unset;
+        padding-left: 16px;
+    }
+
+    strong {
+        font-weight: bold;
     }
 
     deckgo-highlight-code {
