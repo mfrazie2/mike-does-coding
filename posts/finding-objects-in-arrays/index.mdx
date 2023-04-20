@@ -1,11 +1,9 @@
 ---
-date: 2023-04-19
+date: 2023-04-20
 title: Finding Objects in Arrays
 ---
 
-Arrays in JavaScript are great for holding list-like data, accepting anything from primitives to complex types (or a mix thereof). When the time comes to find the piece of data you need, there are myriad ways to accomplish the task. Determining which method to use can turn into a problem on its own, requiring dives into the documentation and making comparisons. Fortunately, I have run into this issue so many times I prepared a lightning talk on the topic and presented it a couple of times. Here is a rough translation of talk-to-text. Let's dive into the array methods we can use to find an item in an array.
-
-# Finding Objects in Arrays
+Arrays in JavaScript are great for holding list-like data, accepting anything from [primitives](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) to [complex](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#objects) types (or a mix thereof). When the time comes to find the piece of data you need, there are a myriad of ways to accomplish the task. Determining which method to use can turn into a problem on its own, requiring dives into the documentation and making comparisons. Fortunately, I have run into this issue so many times I prepared a lightning talk on the topic and presented it a couple of times. Here is a rough translation of talk-to-text. Let's dive into the array methods we can use to find an item in an array.
 
 ## Context and Example Limitations
 
@@ -22,30 +20,34 @@ Second, the methods we are going to cover are listed below. At the time of writi
 - `findLast`
 - `includes`
 
-Third, we could also choose to use `lodash` or not use these methods and rely on a `for` loop. I won't cover these options because the array methods will work for what we need and many of the `lodash` functions are being added as native methods.
+Third, we could also choose to use [`lodash`](https://lodash.com/), write our own `for` loops, or use other higher-order methods such as `map`, `filter` or `reduce`. I won't cover these options because the above array methods will work for what we need, many of the `lodash` functions are being added as native methods and `map`/`filter`/`reduce` will require us to re-implement much of the same existing logic.
+
+Last, I am going to refer to methods as being available pre-ES6 and post-ES6. I am not going to focus on the _exact_ releases for the methods because the language is changing quickly and that's not why we're here.
 
 Now that we got that out of the way, let's look at how we can find the index of our object-of-interest.
 
 ### Finding The Index
 
-Prior to the ES6 specification, the only methods to find the index of an item in the array were `Array.prototype.indexOf` and `Array.prototype.lastIndexOf` (OR WAS THIS IN ES2015 TOO?). In ES6+, the `Array.prototype.findIndex` and `Array.prototype.findLastIndex` methods were introduced. The differences between these methods are nuanced and could lead to headaches.
+Prior to the ES6 specification, the only methods to find the index of an item in the array was `Array.prototype.indexOf`. In ES6+, the `Array.prototype.findIndex`, `Array.prototype.findLastIndex` and `Array.prototype.lastIndexOf` methods were introduced. The differences between these methods are nuanced and could lead to headaches.
 
 ### `indexOf`/`lastIndexOf`
 
-The call signature for [`indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf) and [`lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf) require a single `searchValue` argument (and an optional `fromIndex`). If the `searchValue` is in the array, the index value is returned; if the value is not in the array, a value of `-1` is returned. Behind the scenes, the methods are performing a strict equality check ([`===`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality)) on the values in the array versus the `searchValue`. If we are searching for a primitive value, such as a string or number, this will work great. If we are trying to find a complex value, such as `arr.indexOf({ id: 2 })`, this will not work because the item in the array is not the same as argument value.
+The call signature for [`indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf) and [`lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf) require a single `searchValue` argument (and an optional `fromIndex`). If the `searchValue` is in the array, the index value is returned; if the value is not in the array, a value of `-1` is returned. Behind the scenes, the methods perform a strict equality check ([`===`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality)) on the values in the array versus the `searchValue`. If we search for a primitive value, such as a string or number, this will work great. If we try to find a complex value, such as `arr.indexOf({ id: 2 })`, this will not work because the item in the array is not the same as argument value.
 
 The difference between `indexOf` and `lastIndexOf` is the direction of iteration. `indexOf` begins at index 0 and increases in value. `lastIndexOf` begins at the last index and decreases in value. Each returns the first index found in the respective iteration direction.
 
 > If you find yourself ever looking for `NaN` in an array, `indexOf` and `lastIndexOf` will always return `-1` because `NaN` values are never compared as equal.
 
 ```javascript
-let arr = [1, 2, 3, 4, 5, 3, 6];
+let arr = [1, 2, 3, 4, 5, 3, 6, NaN];
 
 let foundIdx = arr.indexOf(3); // 2
 
 let lastFoundIdx = arr.lastIndexOf(3); // 5
 
 let idxNotFound = arr.indexOf(7); // -1
+
+let nanIdx = arr.indexOf(NaN); // -1
 
 let arr2 = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
@@ -114,7 +116,7 @@ We can now find a reference to the item itself. This is super helpful if we need
 
 ### Determining the Item Exists
 
-Prior to the ES6 specification, the [`Array.prototype.some`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some) method could be used to return a boolean value for the existence of an item in an array. In ES6+, the [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes) method was introduced. The difference between the methods comes down to what type of value you are searching for: simple/primitive or complex.
+Prior to the ES6 specification, the [`Array.prototype.some`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some) method could be used to return a boolean value for the existence of an item in an array. In ES6+, the [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes) method was introduced. The difference between the methods comes down to what type of value you search for: simple/primitive or complex.
 
 #### `some`
 
@@ -153,6 +155,40 @@ let arr2 = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
 let willNotWork = arr2.includes({ id: 2 }); // false
 ```
+
+### Bonus: Finding the Max/Min number
+
+While there is no method on the `Array.prototype`, JavaScript does allow us to get the maximum or minimum number from an array of numbers. We can do this by using the [`max`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max) or [`min`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min) methods on the [`Math`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math) global object. _Note:_ This approach only works with `Number`s and not `BigInt`s.
+
+The `max` and `min` methods require a list of at least two or more numbers. The methods will return the respective value based on the list. Prior to ES6, we would need to use a `for` loop or the [`Function.prototype.apply`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply) pattern. In ES6, the [spread operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax) (`...`) was introduced as a way to take the values out of an array and apply them as individual arguments. (The `...` operator works on any interable, including objects, strings, maps, sets.)
+
+#### `Function.prototype.apply` Pattern
+
+The `apply` method is useful when trying to call an object method in a different context and providing an array of arguments. In this case, we are calling `apply` on the `Math.min` method in the context of the `Max` object and providing an array of numbers. (If that doesn't make sense, please read the documentation on the `apply` method for more details.)
+
+```javascript
+const arr = [1, 3, 4, 7, 10, 5, 33, -5, 32];
+
+const min = Math.min.apply(Math, arr);
+console.log(min); // -5
+
+const max = Math.max.apply(Math, arr);
+console.log(max); // 33
+```
+
+#### Spread Operator (`...`)
+
+```javascript
+const arr = [1, 3, 4, 7, 10, 5, 33, -5, 32];
+
+const min = Math.min(...arr); // Equivalent to `Math.min(1, 3, 4, 7, ..., 32);
+console.log(min); // -5
+
+const max = Math.max(...arr); // Equivalent to `Math.max(1, 3, 4, 7, ..., 32);
+console.log(max); // 33
+```
+
+Between the two, I prefer the spread operator (`...`) because that is now becoming more commonplace in codebases. I learned the `Function.prototype.apply` pattern years ago and never used in a production codebase. I had to research the pattern again for this post and will probably not use it again.
 
 ## Final Thoughts
 
