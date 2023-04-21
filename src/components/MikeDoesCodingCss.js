@@ -36,7 +36,7 @@ const MikeDoesCodingCss = createGlobalStyle`
         letter-spacing: 0.1rem;
     }
 
-    p {
+    article p {
         margin: 15px 0;
     }
 

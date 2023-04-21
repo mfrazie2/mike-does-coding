@@ -16,12 +16,20 @@ const FooterInner = styled.div`
   height: 60px;
   justify-content: space-between;
   margin: 0 auto;
-  width: 960px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    height: unset;
+    padding-bottom: 8px;
+  }
 `;
 
 const LinkIconWrapper = styled.a`
   color: #173670;
-  margin-left: 16px;
+
+  :not(:first-of-type) {
+    margin-left: 16px;
+  }
 `;
 //#endregion
 

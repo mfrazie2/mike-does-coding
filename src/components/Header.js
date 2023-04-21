@@ -19,7 +19,6 @@ const HeaderInner = styled.div`
   height: 80px;
   justify-content: space-between;
   margin: 0 auto;
-  width: 960px;
 `;
 
 // #endregion
