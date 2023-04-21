@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import SeoComponent from '../../components/seoComponent';
 import renderTimeToRead from '../../utils/renderTimeToRead';
 import ContentWrapper from '../../components/ContentWrapper';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 //#region
 const BlogEntry = styled.div`
@@ -12,18 +13,30 @@ const BlogEntry = styled.div`
   }
 `;
 
-const BlogTitle = styled.h2`
+const BlogTitle = styled(props => <Link {...props} />)`
   color: #173670;
+  text-decoration-color: #173670;
 `;
 
 const BlogSubtitle = styled.div`
   display: flex;
   gap: 2rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: unset;
+
+    p {
+      margin-bottom: 8px;
+      margin-top: unset;
+    }
+  }
 `;
 
 //#endregion
 
 const BlogPage = ({ data }) => {
+  const isMobile = useMediaQuery('(max-width: 480px)');
   const posts = data.allMdx.nodes;
 
   return (
@@ -33,12 +46,12 @@ const BlogPage = ({ data }) => {
         {posts.map(post => {
           return (
             <BlogEntry key={post.id}>
-              <Link to={`${post.slug}/`}>
-                <BlogTitle>{post.frontmatter.title}</BlogTitle>
-              </Link>
+              <BlogTitle to={`${post.slug}/`}>
+                <h2>{post.frontmatter.title}</h2>
+              </BlogTitle>
               <BlogSubtitle>
                 <p>{post.frontmatter.date}</p>
-                <p>|</p>
+                {!isMobile && <p>|</p>}
                 <p>{renderTimeToRead(post.timeToRead)}</p>
               </BlogSubtitle>
             </BlogEntry>

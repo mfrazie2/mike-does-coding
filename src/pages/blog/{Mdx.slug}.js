@@ -5,8 +5,13 @@ import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import { defineCustomElements as deckDeckGoHighlightElement } from '@deckdeckgo/highlight-code/dist/loader';
 import SeoComponent from '../../components/seoComponent';
 import ContentWrapper from '../../components/ContentWrapper';
+import styled from 'styled-components';
 
 deckDeckGoHighlightElement();
+
+const Date = styled.p`
+  font-style: italic;
+`;
 
 const BlogPostPage = ({ data }) => {
   const post = data.mdx;
@@ -21,7 +26,7 @@ const BlogPostPage = ({ data }) => {
             <GatsbyImage image={image} alt={post.frontmatter.imageAlt} />
           ) : null}
           <h1>{post.frontmatter.title}</h1>
-          <p>{post.frontmatter.date}</p>
+          <Date>{post.frontmatter.date}</Date>
           <MDXRenderer>{post.body}</MDXRenderer>
         </article>
       </ContentWrapper>
