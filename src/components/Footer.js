@@ -17,7 +17,7 @@ const FooterInner = styled.div`
   justify-content: space-between;
   margin: 0 auto;
 
-  @media (max-width: 480px) {
+  @media (max-width: 540px) {
     flex-direction: column;
     height: unset;
     padding-bottom: 8px;

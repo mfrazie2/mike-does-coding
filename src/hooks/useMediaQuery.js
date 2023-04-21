@@ -4,7 +4,7 @@ export const useMediaQuery = query => {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
-    const media = window.matchMedia(query);
+    const media = window?.matchMedia(query) ?? false;
     if (media.matches !== matches) {
       setMatches(media.matches);
     }
@@ -14,7 +14,7 @@ export const useMediaQuery = query => {
     media.addEventListener('change', listener);
 
     return () => media.removeEventListener('change', listener);
-  }, []);
+  }, [matches, query]);
 
   return matches;
 };
