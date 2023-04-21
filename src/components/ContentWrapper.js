@@ -6,7 +6,7 @@ const StyledWrapper = styled.div`
   margin: 0 auto;
   max-width: 960px;
 
-  @media (max-width: 480px) {
+  @media (max-width: 970px) {
     padding: 0 16px;
   }
 `;
