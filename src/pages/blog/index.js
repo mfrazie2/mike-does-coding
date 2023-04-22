@@ -40,25 +40,22 @@ const BlogPage = ({ data }) => {
   const posts = data.allMdx.nodes;
 
   return (
-    <>
-      <SeoComponent title={`Blog`} />
-      <ContentWrapper>
-        {posts.map(post => {
-          return (
-            <BlogEntry key={post.id}>
-              <BlogTitle to={`${post.slug}/`}>
-                <h2>{post.frontmatter.title}</h2>
-              </BlogTitle>
-              <BlogSubtitle>
-                <p>{post.frontmatter.date}</p>
-                {!isMobile && <p>|</p>}
-                <p>{renderTimeToRead(post.timeToRead)}</p>
-              </BlogSubtitle>
-            </BlogEntry>
-          );
-        })}
-      </ContentWrapper>
-    </>
+    <ContentWrapper>
+      {posts.map(post => {
+        return (
+          <BlogEntry key={post.id}>
+            <BlogTitle to={`${post.slug}/`}>
+              <h2>{post.frontmatter.title}</h2>
+            </BlogTitle>
+            <BlogSubtitle>
+              <p>{post.frontmatter.date}</p>
+              {!isMobile && <p>|</p>}
+              <p>{renderTimeToRead(post.timeToRead)}</p>
+            </BlogSubtitle>
+          </BlogEntry>
+        );
+      })}
+    </ContentWrapper>
   );
 };
 
@@ -77,5 +74,7 @@ export const PageQuery = graphql`
     }
   }
 `;
+
+export const Head = () => <SeoComponent title={`Blog`} />;
 
 export default BlogPage;

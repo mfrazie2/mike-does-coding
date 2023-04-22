@@ -20,7 +20,6 @@ const AboutImage = styled.img`
 const AboutPage = () => {
   return (
     <>
-      <SeoComponent title={`About`} />
       <ContentWrapper>
         <h2>Hi, I'm Mike</h2>
         <AboutInner>
@@ -60,5 +59,7 @@ const AboutPage = () => {
     </>
   );
 };
+
+export const Head = () => <SeoComponent title={`About`} />;
 
 export default AboutPage;
