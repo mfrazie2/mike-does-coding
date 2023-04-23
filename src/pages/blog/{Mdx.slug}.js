@@ -18,19 +18,16 @@ const BlogPostPage = ({ data }) => {
   const image = getImage(post.frontmatter.image);
 
   return (
-    <>
-      <SeoComponent title={post.frontmatter.title} />
-      <ContentWrapper>
-        <article>
-          {image ? (
-            <GatsbyImage image={image} alt={post.frontmatter.imageAlt} />
-          ) : null}
-          <h1>{post.frontmatter.title}</h1>
-          <Date>{post.frontmatter.date}</Date>
-          <MDXRenderer>{post.body}</MDXRenderer>
-        </article>
-      </ContentWrapper>
-    </>
+    <ContentWrapper>
+      <article>
+        {image ? (
+          <GatsbyImage image={image} alt={post.frontmatter.imageAlt} />
+        ) : null}
+        <h1>{post.frontmatter.title}</h1>
+        <Date>{post.frontmatter.date}</Date>
+        <MDXRenderer>{post.body}</MDXRenderer>
+      </article>
+    </ContentWrapper>
   );
 };
 
@@ -42,7 +39,11 @@ export const query = graphql`
         date(formatString: "MMMM D, YYYY")
         image {
           childImageSharp {
-            gatsbyImageData(layout: CONSTRAINED)
+            gatsbyImageData(
+              layout: CONSTRAINED
+              placeholder: BLURRED
+              formats: [JPG, PNG]
+            )
           }
         }
         imageAlt
@@ -51,5 +52,9 @@ export const query = graphql`
     }
   }
 `;
+
+export const Head = ({ pageContext }) => (
+  <SeoComponent title={pageContext.title} />
+);
 
 export default BlogPostPage;

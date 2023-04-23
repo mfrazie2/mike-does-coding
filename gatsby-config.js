@@ -2,9 +2,10 @@ module.exports = {
   siteMetadata: {
     title: `Mike Does Coding`,
     description: `My personal blog`,
+    image: `/src/images/icon.png`,
+    siteUrl: `https://www.mikedoescoding.com`,
   },
   plugins: [
-    `gatsby-plugin-react-helmet`,
     `gatsby-plugin-image`,
     `gatsby-plugin-sharp`,
     `gatsby-transformer-sharp`,
