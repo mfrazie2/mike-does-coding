@@ -39,7 +39,11 @@ export const query = graphql`
         date(formatString: "MMMM D, YYYY")
         image {
           childImageSharp {
-            gatsbyImageData(layout: CONSTRAINED)
+            gatsbyImageData(
+              layout: CONSTRAINED
+              placeholder: BLURRED
+              formats: [JPG, PNG]
+            )
           }
         }
         imageAlt
@@ -49,14 +53,8 @@ export const query = graphql`
   }
 `;
 
-export const Head = ({ location, params, data, pageContext }) => {
-  console.log({
-    location,
-    params,
-    data,
-    pageContext,
-  });
-  return <SeoComponent title={pageContext.title} />;
-};
+export const Head = ({ pageContext }) => (
+  <SeoComponent title={pageContext.title} />
+);
 
 export default BlogPostPage;
