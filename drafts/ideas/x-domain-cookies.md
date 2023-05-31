@@ -5,7 +5,14 @@ title: Cross-Domain Cookies
 
 ## Cross-Domain Cookies
 
-I had a task at work to figure out how to share client-based cookies between a domain and subdomain. The goal was to ensure that an authenticated user token was stored on the subdomain and not accessible on the main domain. At the same time, a small piece of user information (initials) could be available on the domain and all subdomains. In this post, we're going to cover what is a cookie, the history of cookies, and the approach I took to meet the goal.
+In a previous role, I had a task to figure out how to share browser-based cookies between a domain and subdomain. The problem statement sounded straightforward enough and had a couple of requirements.
+
+1. The authenticated user token is stored on the subdomain and not accessible on the main domain.
+1. A small piece of user information (initials) is available on the domain and all subdomains.
+
+Having had limited experience working with browser-based cookies, I ended up diving into Stackoverflow answers and specification documents. I quickly learned how difficult this problem is and discovered that the internet is divided on how to approach the solution.
+
+In this post, we're going to cover what is a cookie, the history of cookies, and the approach I took to meet the goal. Along the way, we will discuss the advantages of using a third-party library for setting browser-based cookie and how to get your `localhost` to run with domain/subdomain hosts. Let's jump in.
 
 ### What is a cookie?
 
@@ -30,5 +37,7 @@ Previously, to have a cookie be available between a domain and subdomain, the `d
 ### Getting Things to Work
 
 ## Final Thoughts
+
+As I mentioned at the top of this post, the dev communitity is divided on how to approach this solution. I leave it up to you to test any proposed solution and vet it against the security policy for your app. The solution I used here satisified the security concerns for our end users in that the authentication token could only be read on the specific subdomain and no identifiable user information (PII) was shared unsafely.
 
 Any questions, comments or errors, please [drop me a line](mailto:me@mikedoescoding.com)!
