@@ -40,7 +40,7 @@ const Footer = () => {
         <FooterInner>
           <p>Coded from a couch (probably) | &copy; 2021</p>
           <div>
-            <LinkIconWrapper href="mailto:me@mikedoescoding.com">
+            <LinkIconWrapper href="mailto:mikedoescoding@gmail.com">
               <FaEnvelope size="2em" aria-label="Contact by email" />
             </LinkIconWrapper>
             <LinkIconWrapper

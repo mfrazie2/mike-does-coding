@@ -31,4 +31,4 @@ Previously, to have a cookie be available between a domain and subdomain, the `d
 
 ## Final Thoughts
 
-Any questions, comments or errors, please [drop me a line](mailto:me@mikedoescoding.com)!
+Any questions, comments or errors, please [drop me a line](mailto:mikedoescoding@gmail.com)!
